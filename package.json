@@ -1,0 +1,26 @@
+{
+  "name": "datababies_450",
+  "version": "1.0.0",
+  "description": "Final project for 450",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tirthakharel/datababies_450.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tirthakharel/datababies_450/issues"
+  },
+  "homepage": "https://github.com/tirthakharel/datababies_450#readme",
+  "dependencies": {
+    "concurrently": "^5.1.0",
+    "express": "^4.17.1",
+    "mogoose": "0.0.1-security",
+    "mongoose": "^5.9.6",
+    "nodemon": "^2.0.2"
+  }
+}
