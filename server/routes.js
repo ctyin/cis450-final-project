@@ -10,8 +10,6 @@ async function run() {
     } catch(err) {
         console.error(err.message);
     }
-    
-    console.log('reached')
 }
 
 run();
