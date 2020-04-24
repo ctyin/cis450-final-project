@@ -23,7 +23,7 @@
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "mogoose": "0.0.1-security",
-    "mongoose": "^5.9.6",
+    "mongoose": "^5.9.10",
     "nodemon": "^2.0.2",
     "oracledb": "latest"
   }
