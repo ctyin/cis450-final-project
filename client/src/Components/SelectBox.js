@@ -9,14 +9,9 @@ class SelectBox extends Component {
       label: this.props.label,
       option: this.props.option,
       loading: true,
-      items: [
-        { value: 'Huhhh', id: 'item-0' },
-        { value: 'Whaaaa', id: 'item-1' },
-        { value: 'Esseeee', id: 'item-2' },
-        { value: 'Hehehe', id: 'item-3' },
-        { value: 'flakdjf', id: 'item-4' },
-      ],
+      items: this.props.items || [],
       showItems: false,
+      func: this.props.setter,
     };
 
     this.clickDropdown = this.clickDropdown.bind(this);
@@ -25,10 +20,6 @@ class SelectBox extends Component {
 
   componentWillMount() {
     document.addEventListener('mousedown', this.handleClick, false);
-  }
-
-  componentDidMount() {
-    //fetch for items
   }
 
   componentWillUnmount() {
@@ -55,6 +46,7 @@ class SelectBox extends Component {
 
   selectItem(e) {
     this.setState({ option: e.target.innerHTML, showItems: false });
+    this.state.func(e.target.innerHTML);
   }
 
   render() {
@@ -69,7 +61,11 @@ class SelectBox extends Component {
         htmlFor={this.state.id}
         onClick={this.clickDropdown}
       >
-        <input style={{ display: 'none' }} value={this.state.option}></input>
+        <input
+          style={{ display: 'none' }}
+          readOnly={true}
+          value={this.state.option}
+        ></input>
         <div className="search-label--label">{this.state.label}</div>
         <span className="search-option" id={this.state.id}>
           {this.state.option}
@@ -78,7 +74,7 @@ class SelectBox extends Component {
           className={!this.state.showItems ? 'items-box hidden' : 'items-box'}
         >
           {this.state.items.map((item) => (
-            <div>
+            <div key={item.id + '--div'}>
               <div
                 key={item.id}
                 value={item.value}
@@ -87,7 +83,10 @@ class SelectBox extends Component {
               >
                 {item.value}
               </div>
-              <div className="items-box--seperater"></div>
+              <div
+                key={item.id + '--sep'}
+                className="items-box--seperater"
+              ></div>
             </div>
           ))}
         </div>
