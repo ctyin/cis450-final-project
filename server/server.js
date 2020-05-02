@@ -26,23 +26,26 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 /************ BEGIN ROUTES ************/
 
-app.get('/', (req, res) => {
-  Account.find({}, (err, account) => {
-    if (err) {
-      res.json({});
-      console.log(err.message);
-    }
-    
-    console.log(account)
-    res.json(account);
-  });
-})
+// SQL Query #1a
+app.get('/twocities', routes.twoCities);
 
-// SQL Query #1
-app.get('/epaRatingDist', routes.getCars);
+// SQL Query #1b
+app.get('/epascore', routes.getEpaScore);
 
-app.get('/test', routes.test);
+// SQL Query #2
+app.get('/efficientVehicles', routes.twoCities);
 
+// SQL Query #3
+app.get('/rankmpg', routes.rankByMPG);
+
+// SQL Query #4
+app.get('/bestElectric', routes.bestElectric);
+
+// SQL Query #5
+app.get('/epowerPairs', routes.bestElectricPowerplantPairs);
+
+// SQL Query #6
+app.get('/fueltype', routes.typeOfFuel);
 
 function errorNotification (err, str, req) {
     var title = 'Error in ' + req.method + ' ' + req.url
