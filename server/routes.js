@@ -279,6 +279,10 @@ async function typeOfFuel(req, res) {
 
 module.exports = {
     twoCities: twoCities,
-    getCars: getCars,
-    
+    getEpaScore: getEpaScore,
+    mostEfficientVehicles: mostEfficientVehicles,
+    rankByMPG: rankByMPG,
+    bestElectric: bestElectric,
+    bestElectricPowerplantPairs: bestElectricPowerplantPairs,
+    typeOfFuel: typeOfFuel,    
 }
