@@ -12,16 +12,8 @@ class SearchForm extends Component {
       model: null,
       year: null,
       func: this.props.func,
-      originItems: null,
-      destinationItems: null,
-      makeItems: null,
-      modelItems: null,
-      yearItems: null,
-      loadingOrigin: true,
-      loadingDest: true,
-      loadingMake: true,
-      loadingModel: true,
-      loadingYear: true,
+      setModel: false,
+      setYear: false,
     };
 
     this.originSet = this.originSet.bind(this);
@@ -34,16 +26,15 @@ class SearchForm extends Component {
   componentDidUpdate(prevProps, prevState) {
     // update state for items
 
-    if (this.state.origin !== prevState.origin) {
-      // get destinations
-    }
-
     if (this.state.make !== prevState.make) {
-      // get models
+      this.setState({ setModel: true, model: null });
+      if (this.state.model !== prevState.model) {
+        this.setState({ setYear: true, year: null });
+      }
     }
 
     if (this.state.model !== prevState.model) {
-      // get years
+      this.setState({ setYear: true, year: null });
     }
   }
 
@@ -82,8 +73,6 @@ class SearchForm extends Component {
       this.state.model !== null &&
       this.state.make !== null &&
       this.state.year !== null;
-
-    const { originItems } = this.state;
 
     return (
       <div className="container">
@@ -124,7 +113,7 @@ class SearchForm extends Component {
                     label="Make"
                     option="Make of Vehicle"
                     elementID="make"
-                    set={false}
+                    set={true}
                   />
                 </div>
               </div>
@@ -137,7 +126,8 @@ class SearchForm extends Component {
                     option="Model of Vehicle"
                     label="Model"
                     elementID="model"
-                    set={false}
+                    set={this.state.setModel}
+                    make={this.state.make}
                   />
                 </div>
               </div>
@@ -150,7 +140,9 @@ class SearchForm extends Component {
                     label="Year"
                     option="Year of Vehicle"
                     elementID="year"
-                    set={false}
+                    set={this.state.setYear}
+                    make={this.state.make}
+                    model={this.state.model}
                   />
                 </div>
               </div>

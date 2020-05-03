@@ -15,10 +15,51 @@ class SelectBox extends Component {
       func: this.props.setter,
       type: this.props.type,
       set: this.props.set,
+      make: this.props.make,
+      model: this.props.model,
+      attempted: false,
     };
 
     this.clickDropdown = this.clickDropdown.bind(this);
     this.selectItem = this.selectItem.bind(this);
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.set !== state.set) {
+      if (state.type === 4) {
+        return {
+          set: props.set,
+          make: props.make,
+        };
+      } else if (state.type === 5) {
+        return {
+          set: props.set,
+          make: props.make,
+          model: props.model,
+        };
+      }
+      return {
+        set: props.set,
+      };
+    }
+
+    if (state.type === 4 && props.make !== state.make) {
+      return {
+        set: props.set,
+        make: props.make,
+      };
+    } else if (
+      state.type === 5 &&
+      (props.make !== state.make || props.model !== state.model)
+    ) {
+      return {
+        set: props.set,
+        make: props.make,
+        model: props.model,
+      };
+    }
+
+    return null;
   }
 
   componentDidMount() {
@@ -26,7 +67,6 @@ class SelectBox extends Component {
     const { type, set } = this.state;
 
     if (type === 1 && set) {
-      console.log('setting dropdown');
       let newCities = [];
       fetch('http://localhost:8081/allcities')
         .then((res) => res.json())
@@ -57,9 +97,7 @@ class SelectBox extends Component {
         .catch((err) => {
           console.log(err);
         });
-    }
-    if (type === 2 && set) {
-      console.log('setting dropdown');
+    } else if (type === 2 && set) {
       let newCities = [];
       fetch('http://localhost:8081/allcities')
         .then((res) => res.json())
@@ -91,16 +129,15 @@ class SelectBox extends Component {
           console.log(err);
         });
     } else if (type === 3 && set) {
-      console.log('setting dropdown');
-      let newCities = [];
-      fetch('http://localhost:8081/allcities')
+      let newMakes = [];
+      fetch('http://localhost:8081/allmakes')
         .then((res) => res.json())
         .then((result) => {
           for (let i = 0; i < result.rows.length; i++) {
-            newCities.push(
-              <div key={`${result.rows[i][0]}--div`}>
+            newMakes.push(
+              <div key={`${result.rows[i][0]}--make-div`}>
                 <div
-                  key={`from-city-id-${result.rows[i][0]}`}
+                  key={`make-id-${result.rows[i][0]}`}
                   value={result.rows[i][1]}
                   onClick={this.selectItem}
                   className="items-box--item"
@@ -108,84 +145,125 @@ class SelectBox extends Component {
                   {result.rows[i][1]}
                 </div>
                 <div
-                  key={`${result.rows[i][0]}--sep-from-city`}
+                  key={`${result.rows[i][0]}--sep-make`}
                   className="items-box--seperater"
                 ></div>
               </div>
             );
           }
           this.setState({
-            items: newCities,
+            items: newMakes,
             loading: false,
           });
         })
         .catch((err) => {
           console.log(err);
         });
-    } else if (type === 4 && set) {
-      console.log('setting dropdown');
-      let newCities = [];
-      fetch('http://localhost:8081/allcities')
-        .then((res) => res.json())
-        .then((result) => {
-          for (let i = 0; i < result.rows.length; i++) {
-            newCities.push(
-              <div key={`${result.rows[i][0]}--div`}>
-                <div
-                  key={`from-city-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
-                  onClick={this.selectItem}
-                  className="items-box--item"
-                >
-                  {result.rows[i][1]}
-                </div>
-                <div
-                  key={`${result.rows[i][0]}--sep-from-city`}
-                  className="items-box--seperater"
-                ></div>
-              </div>
-            );
-          }
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { type, set } = this.state;
+
+    if (type === 4 && set) {
+      if (prevState.make !== this.state.make || !this.state.attempted) {
+        let newModels = [];
+        let make = this.props.make;
+        if (make !== null) {
+          fetch(`http://localhost:8081/models/${make}`)
+            .then((res) => res.json())
+            .then((result) => {
+              for (let i = 0; i < result.rows.length; i++) {
+                newModels.push(
+                  <div key={`${result.rows[i][0]}-model--div`}>
+                    <div
+                      key={`model-id-${result.rows[i][0]}`}
+                      value={result.rows[i][1]}
+                      onClick={this.selectItem}
+                      className="items-box--item"
+                    >
+                      {result.rows[i][1]}
+                    </div>
+                    <div
+                      key={`${result.rows[i][0]}--sep-model`}
+                      className="items-box--seperater"
+                    ></div>
+                  </div>
+                );
+              }
+              this.setState({
+                items: newModels,
+                loading: false,
+                attempted: true,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
           this.setState({
-            items: newCities,
-            loading: false,
+            items: [],
+            loading: true,
+            attempted: false,
+            option: 'Model of Vehicle',
           });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        }
+      }
     } else if (type === 5 && set) {
-      console.log('setting dropdown');
-      let newCities = [];
-      fetch('http://localhost:8081/allcities')
-        .then((res) => res.json())
-        .then((result) => {
-          for (let i = 0; i < result.rows.length; i++) {
-            newCities.push(
-              <div key={`${result.rows[i][0]}--div`}>
-                <div
-                  key={`from-city-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
-                  onClick={this.selectItem}
-                  className="items-box--item"
-                >
-                  {result.rows[i][1]}
-                </div>
-                <div
-                  key={`${result.rows[i][0]}--sep-from-city`}
-                  className="items-box--seperater"
-                ></div>
-              </div>
-            );
-          }
+      if (
+        prevState.model !== this.state.model ||
+        prevState.make !== this.state.make ||
+        !this.state.attempted
+      ) {
+        let newYears = [];
+        let make = this.props.make;
+        let model = this.props.model;
+        if (make !== null && model !== null) {
+          console.log('attempting fetch');
+          fetch(`http://localhost:8081/years/${make}/${model}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((result) => {
+              console.log(result);
+              for (let i = 0; i < result.rows.length; i++) {
+                newYears.push(
+                  <div key={`${result.rows[i][0]}-year--div`}>
+                    <div
+                      key={`year-id-${result.rows[i][0]}`}
+                      value={result.rows[i][1]}
+                      onClick={this.selectItem}
+                      className="items-box--item"
+                    >
+                      {result.rows[i][1]}
+                    </div>
+                    <div
+                      key={`${result.rows[i][0]}--sep-year`}
+                      className="items-box--seperater"
+                    ></div>
+                  </div>
+                );
+              }
+              this.setState({
+                items: newYears,
+                loading: false,
+                attempted: true,
+                option: 'Year of Vehicle',
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          console.log('we here tho?');
           this.setState({
-            items: newCities,
-            loading: false,
+            items: [],
+            loading: true,
+            attempted: false,
+            option: 'Year of Vehicle',
           });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        }
+      }
     }
   }
 
