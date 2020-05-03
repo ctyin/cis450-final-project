@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 /************ BEGIN ROUTES ************/
 
 // SQL Query #1a
-app.get('/twocities', routes.twoCities);
+app.get('/twocities/:city1/:city2', routes.twoCities);
 
 // SQL Query #1b
 app.get('/epascore', routes.getEpaScore);
