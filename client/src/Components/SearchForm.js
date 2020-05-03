@@ -12,11 +12,16 @@ class SearchForm extends Component {
       model: null,
       year: null,
       func: this.props.func,
-      originItems: [],
-      destinationItems: [],
-      makeItems: [],
-      modelItems: [],
-      yearItems: [],
+      originItems: null,
+      destinationItems: null,
+      makeItems: null,
+      modelItems: null,
+      yearItems: null,
+      loadingOrigin: true,
+      loadingDest: true,
+      loadingMake: true,
+      loadingModel: true,
+      loadingYear: true,
     };
 
     this.originSet = this.originSet.bind(this);
@@ -24,11 +29,6 @@ class SearchForm extends Component {
     this.makeSet = this.makeSet.bind(this);
     this.modelSet = this.modelSet.bind(this);
     this.yearSet = this.yearSet.bind(this);
-  }
-
-  componentDidMount() {
-    // get all cities for origin
-    // get all Makes of cars
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -83,6 +83,8 @@ class SearchForm extends Component {
       this.state.make !== null &&
       this.state.year !== null;
 
+    const { originItems } = this.state;
+
     return (
       <div className="container">
         <form action="get" role="search" onSubmit={this.handleSubmit}>
@@ -91,11 +93,12 @@ class SearchForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    items={[{ value: 'Houston', id: 'i0' }]}
+                    type={1}
                     setter={this.originSet}
                     label="Origin"
                     option="Origin City"
                     elementID="source"
+                    set={true}
                   />
                 </div>
               </div>
@@ -103,11 +106,12 @@ class SearchForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    items={[{ value: 'Dallas', id: 'i1' }]}
+                    type={2}
                     setter={this.destSet}
                     label="destination"
                     option="Destination City"
                     elementID="dest"
+                    set={false}
                   />
                 </div>
               </div>
@@ -115,11 +119,12 @@ class SearchForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    items={[{ value: 'Honda', id: 'i2' }]}
+                    type={3}
                     setter={this.makeSet}
                     label="Make"
                     option="Make of Vehicle"
                     elementID="make"
+                    set={false}
                   />
                 </div>
               </div>
@@ -127,11 +132,12 @@ class SearchForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    items={[{ value: 'Civic', id: 'i3' }]}
+                    type={4}
                     setter={this.modelSet}
                     option="Model of Vehicle"
                     label="Model"
                     elementID="model"
+                    set={false}
                   />
                 </div>
               </div>
@@ -139,11 +145,12 @@ class SearchForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    items={[{ value: '2009', id: 'i4' }]}
+                    type={5}
                     setter={this.yearSet}
                     label="Year"
                     option="Year of Vehicle"
                     elementID="year"
+                    set={false}
                   />
                 </div>
               </div>
