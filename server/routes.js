@@ -41,10 +41,10 @@ async function test(req, res) {
 
 // 1A
 async function twoCities(req, res) {
-    let given_city1_id = req.params.city1;
-    let given_city2_id = req.params.city2;
-    
-    let query = `SELECT C.latitude AS city1lat, C.longitude AS city1long
+  let given_city1_id = req.params.city1;
+  let given_city2_id = req.params.city2;
+
+  let query = `SELECT C.latitude AS city1lat, C.longitude AS city1long
     FROM City C
     WHERE C.id = ${given_city1_id}
     UNION 
@@ -70,11 +70,11 @@ async function twoCities(req, res) {
 
 // 1b
 async function getEpaScore(req, res) {
-    let given_make = req.params.make;
-    let given_model = req.params.model;
-    let given_year = req.params.year;
-    
-    let query = `SELECT E.epa_score
+  let given_make = req.params.make;
+  let given_model = req.params.model;
+  let given_year = req.params.year;
+
+  let query = `SELECT E.epa_score
     FROM Vehicle V JOIN  Emission E ON V.id = E.vehicle_id
     WHERE V.make = ${given_make} AND V.model = ${given_model} AND V.year = ${given_year}
     `;
@@ -96,7 +96,7 @@ async function getEpaScore(req, res) {
 
 // 2
 async function mostEfficientVehicles(req, res) {
-    let given_year = req.params.year;
+  let given_year = req.params.year;
 
   let query = `SELECT V.id, V.make, V.model
 	FROM Vehicle V, Emission E
@@ -152,10 +152,9 @@ async function rankByMPG(req, res) {
 
 // 4
 async function bestElectric(req, res) {
-    
-    let given_state = req.params.state;
-    
-    let query = `WITH Electric AS
+  let given_state = req.params.state;
+
+  let query = `WITH Electric AS
 	(
 		SELECT *
 		FROM Vehicle
@@ -188,14 +187,14 @@ async function bestElectric(req, res) {
 
 // 5
 async function bestElectricPowerplantPairs(req, res) {
-    let plant_id = req.params.plant_id;
-    let year = req.params.year;
-    let rep_prime = req.params.prime_mover;
-    let nunit_id = req.params.nunit_id;
-    let vehicle_id = req.params.vehicle_id;
-    let fueltype = req.params.fueltype;
+  let plant_id = req.params.plant_id;
+  let year = req.params.year;
+  let rep_prime = req.params.prime_mover;
+  let nunit_id = req.params.nunit_id;
+  let vehicle_id = req.params.vehicle_id;
+  let fueltype = req.params.fueltype;
 
-    let query = `WITH Electric AS
+  let query = `WITH Electric AS
     (
         SELECT *
         FROM Vehicle
@@ -237,7 +236,7 @@ async function bestElectricPowerplantPairs(req, res) {
 
 // 6
 async function typeOfFuel(req, res) {
-    let given_state = req.params.state;
+  let given_state = req.params.state;
 
   `WITH GivenPlant AS
     (
@@ -287,6 +286,74 @@ async function getAllCities(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getAllMakes(req, res) {
+  let query = `SELECT MAX(ID), MAKE FROM Vehicle GROUP BY MAKE ORDER BY MAKE ASC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getModels(req, res) {
+  let make = req.params.make;
+
+  let query = `SELECT MAX(ID), MODEL
+  FROM Vehicle 
+  WHERE MAKE='${make}'
+  GROUP BY MODEL
+  ORDER BY MODEL ASC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getYears(req, res) {
+  let make = req.params.make;
+  let model = req.params.model;
+
+  let query = `SELECT MAX(ID), YEAR
+    FROM Vehicle 
+    WHERE MAKE='${make}' AND 
+        MODEL='${model}'
+    GROUP BY YEAR
+    ORDER BY YEAR DESC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 module.exports = {
   twoCities: twoCities,
   getEpaScore: getEpaScore,
@@ -296,4 +363,7 @@ module.exports = {
   bestElectricPowerplantPairs: bestElectricPowerplantPairs,
   typeOfFuel: typeOfFuel,
   getAllCities: getAllCities,
+  getAllMakes: getAllMakes,
+  getModels: getModels,
+  getYears: getYears,
 };

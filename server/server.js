@@ -53,6 +53,12 @@ app.get('/fueltype/:state', routes.typeOfFuel);
 
 app.get('/allcities', routes.getAllCities);
 
+app.get('/allmakes', routes.getAllMakes);
+
+app.get('/models/:make', routes.getModels);
+
+app.get('/years/:make/:model', routes.getYears);
+
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
 
