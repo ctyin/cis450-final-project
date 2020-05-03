@@ -41,17 +41,10 @@ async function test(req, res) {
 
 // 1A
 async function twoCities(req, res) {
-<<<<<<< HEAD
     let given_city1_id = req.params.city1;
     let given_city2_id = req.params.city2;
     
     let query = `SELECT C.latitude AS city1lat, C.longitude AS city1long
-=======
-  let given_city1_id = res.params.city1;
-  let given_city2_id = res.params.city2;
-
-  let query = `SELECT C.latitude AS city1lat, C.longitude AS city1long
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
     FROM City C
     WHERE C.id = ${given_city1_id}
     UNION 
@@ -77,19 +70,11 @@ async function twoCities(req, res) {
 
 // 1b
 async function getEpaScore(req, res) {
-<<<<<<< HEAD
     let given_make = req.params.make;
     let given_model = req.params.model;
     let given_year = req.params.year;
     
     let query = `SELECT E.epa_score
-=======
-  let given_make = res.params.make;
-  let given_model = res.params.model;
-  let given_year = res.params.year;
-
-  let query = `SELECT E.epa_score
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
     FROM Vehicle V JOIN  Emission E ON V.id = E.vehicle_id
     WHERE V.make = ${given_make} AND V.model = ${given_model} AND V.year = ${given_year}
     `;
@@ -111,11 +96,7 @@ async function getEpaScore(req, res) {
 
 // 2
 async function mostEfficientVehicles(req, res) {
-<<<<<<< HEAD
     let given_year = req.params.year;
-=======
-  let given_year = res.params.year;
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
 
   let query = `SELECT V.id, V.make, V.model
 	FROM Vehicle V, Emission E
@@ -171,16 +152,10 @@ async function rankByMPG(req, res) {
 
 // 4
 async function bestElectric(req, res) {
-<<<<<<< HEAD
     
     let given_state = req.params.state;
     
     let query = `WITH Electric AS
-=======
-  let given_state = res.params.state;
-
-  let query = `WITH Electric AS
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
 	(
 		SELECT *
 		FROM Vehicle
@@ -213,7 +188,6 @@ async function bestElectric(req, res) {
 
 // 5
 async function bestElectricPowerplantPairs(req, res) {
-<<<<<<< HEAD
     let plant_id = req.params.plant_id;
     let year = req.params.year;
     let rep_prime = req.params.prime_mover;
@@ -222,16 +196,6 @@ async function bestElectricPowerplantPairs(req, res) {
     let fueltype = req.params.fueltype;
 
     let query = `WITH Electric AS
-=======
-  let plant_id = res.params.plant_id;
-  let year = res.params.year;
-  let rep_prime = res.params.prime_mover;
-  let nunit_id = res.params.nunit_id;
-  let vehicle_id = res.params.vehicle_id;
-  let fueltype = res.params.fueltype;
-
-  let query = `WITH Electric AS
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
     (
         SELECT *
         FROM Vehicle
@@ -273,11 +237,7 @@ async function bestElectricPowerplantPairs(req, res) {
 
 // 6
 async function typeOfFuel(req, res) {
-<<<<<<< HEAD
     let given_state = req.params.state;
-=======
-  let given_state = res.params.state;
->>>>>>> d7bed639a2dc1cda527a75a970e6f6966de06f04
 
   `WITH GivenPlant AS
     (

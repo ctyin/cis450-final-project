@@ -34,22 +34,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/twocities/:city1/:city2', routes.twoCities);
 
 // SQL Query #1b
-app.get('/epascore', routes.getEpaScore);
+app.get('/epascore/:make/:model/:year', routes.getEpaScore);
 
 // SQL Query #2
-app.get('/efficientVehicles', routes.twoCities);
+app.get('/efficientVehicles/:year', routes.mostEfficientVehicles);
 
 // SQL Query #3
 app.get('/rankmpg', routes.rankByMPG);
 
 // SQL Query #4
-app.get('/bestElectric', routes.bestElectric);
+app.get('/bestElectric/:state', routes.bestElectric);
 
 // SQL Query #5
 app.get('/epowerPairs', routes.bestElectricPowerplantPairs);
 
 // SQL Query #6
-app.get('/fueltype', routes.typeOfFuel);
+app.get('/fueltype/:state', routes.typeOfFuel);
 
 app.get('/allcities', routes.getAllCities);
 
