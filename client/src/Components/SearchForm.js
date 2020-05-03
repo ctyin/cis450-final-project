@@ -18,7 +18,7 @@ class SearchForm extends Component {
             <div className="search-inputs">
               <div className="search-input">
                 <div className="select-form">
-                  <SelectBox
+                  <SelectBox id='x'
                     label="Origin"
                     option="Origin City"
                     elementID="source"
