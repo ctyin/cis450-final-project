@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SearchPage from './Components/SearchPage';
 import * as serviceWorker from './serviceWorker';
+import PlantsPage from './Components/ElectricPlants/PlantsPage';
 
 ReactDOM.render(
   <React.StrictMode>

@@ -195,29 +195,42 @@ async function bestElectricPowerplantPairs(req, res) {
     let vehicle_id = req.params.vehicle_id;
     let fueltype = req.params.fueltype;
 
-    let query = `WITH Electric AS
+    let query = `
+    WITH Electric AS
     (
-        SELECT *
-        FROM Vehicle
-        WHERE fueltype1='Electricity'
+      SELECT *
+      FROM Vehicle
+      WHERE fueltype1='Electricity'
+    ),
+    PlantsConsidered AS (
+        SELECT NETGEN, plant_id, rep_primemover, nunit_id, 
+        rep_fueltype, ELEC_FUELCON, plant_name, ELEC_FUELCON / 1000000 / NETGEN as compute2
+        FROM PowerPlants
+        WHERE YEAR=${year} AND NETGEN>0
     ),
     GivenPlant AS
     (
-        SELECT *
-        FROM Powerplants
-        WHERE (plant_id = ${plant_id} AND YEAR=${year} AND REP_PRIMEMOVER=${rep_prime} AND NUNIT_ID=${nunit_id} AND REP_FUELTYPE=${fueltype})
+        SELECT ELEC_FUELCON, NETGEN
+        FROM PlantsConsidered
+        WHERE (plant_id = ${plant_id} AND REP_PRIMEMOVER=${rep_prime} AND NUNIT_ID=${nunit_id} AND REP_FUELTYPE=${fueltype})
     ),
     GivenCar AS
     (
-        SELECT *
-        FROM Electric
-        WHERE id=${vehicle_id}
+    SELECT *
+    FROM Electric
+    WHERE id=${vehicle_id}
+    ),
+    GivenThreshold AS (
+        SELECT GivenPlant.ELEC_FUELCON /1000000 / GivenPlant.NETGEN * GivenCar.hwympg2/1000 AS compute
+        FROM GivenPlant, GivenCar
     )
-    SELECT Electric.MAKE, Electric.MODEL, plants.plant_name
-    FROM Electric CROSS JOIN
-        (SELECT * FROM PowerPlants WHERE YEAR=2016) plants, GivenPlant, GivenCar
-    WHERE (plants.NETGEN > 0 AND GivenPlant.NETGEN > 0)
-        AND (plants.ELEC_FUELCON / 1000000 / plants.NETGEN * Electric.hwympg2/1000) >= (GivenPlant.ELEC_FUELCON /1000000 / GivenPlant.NETGEN * GivenCar.hwympg2/1000);
+    SELECT *
+    FROM (SELECT Electric.MAKE, Electric.MODEL, plants.plant_name
+        FROM Electric, PlantsConsidered plants
+        WHERE (Exists (SELECT * FROM GivenThreshold))
+            AND EXISTS (SELECT * FROM GivenThreshold WHERE (plants.compute2 * Electric.hwympg2/1000) >= GivenThreshold.compute)
+        ORDER BY (plants.compute2 * Electric.hwympg2/1000) DESC) x
+    where ROWNUM < 10;
     `;
 
   const queryDB = async () => {

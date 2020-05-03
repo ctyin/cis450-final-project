@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import NavBar from '../NavBar';
 import PlantsForm from './PlantsForm';
-import '../search_page.css';
+import '../../plant_page.css';
 
 class PlantsPage extends Component {
   constructor(props) {
