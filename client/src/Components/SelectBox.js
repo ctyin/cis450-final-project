@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import loading from '../loading.gif';
 
 class SelectBox extends Component {
   constructor(props) {
@@ -9,29 +10,186 @@ class SelectBox extends Component {
       label: this.props.label,
       option: this.props.option,
       loading: true,
-      items: [
-        { value: 'Huhhh', id: 'item-0' },
-        { value: 'Whaaaa', id: 'item-1' },
-        { value: 'Esseeee', id: 'item-2' },
-        { value: 'Hehehe', id: 'item-3' },
-        { value: 'flakdjf', id: 'item-4' },
-      ],
+      items: [],
       showItems: false,
+      func: this.props.setter,
+      type: this.props.type,
+      set: this.props.set,
     };
 
     this.clickDropdown = this.clickDropdown.bind(this);
     this.selectItem = this.selectItem.bind(this);
   }
 
-  componentWillMount() {
-    document.addEventListener('mousedown', this.handleClick, false);
-  }
-
   componentDidMount() {
-    //fetch for items
+    document.addEventListener('mousedown', this.handleClick, false);
+    const { type, set } = this.state;
+
+    if (type === 1 && set) {
+      console.log('setting dropdown');
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  value={result.rows[i][1]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    if (type === 2 && set) {
+      console.log('setting dropdown');
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  value={result.rows[i][1]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (type === 3 && set) {
+      console.log('setting dropdown');
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  value={result.rows[i][1]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (type === 4 && set) {
+      console.log('setting dropdown');
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  value={result.rows[i][1]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (type === 5 && set) {
+      console.log('setting dropdown');
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  value={result.rows[i][1]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 
-  componentWillUnmount() {
+  UNSAFE_componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClick, false);
   }
 
@@ -55,6 +213,7 @@ class SelectBox extends Component {
 
   selectItem(e) {
     this.setState({ option: e.target.innerHTML, showItems: false });
+    this.state.func(e.target.innerHTML);
   }
 
   render() {
@@ -69,7 +228,11 @@ class SelectBox extends Component {
         htmlFor={this.state.id}
         onClick={this.clickDropdown}
       >
-        <input style={{ display: 'none' }} value={this.state.option}></input>
+        <input
+          style={{ display: 'none' }}
+          readOnly={true}
+          value={this.state.option}
+        ></input>
         <div className="search-label--label">{this.state.label}</div>
         <span className="search-option" id={this.state.id}>
           {this.state.option}
@@ -77,19 +240,11 @@ class SelectBox extends Component {
         <div
           className={!this.state.showItems ? 'items-box hidden' : 'items-box'}
         >
-          {this.state.items.map((item) => (
-            <div>
-              <div
-                key={item.id}
-                value={item.value}
-                onClick={this.selectItem}
-                className="items-box--item"
-              >
-                {item.value}
-              </div>
-              <div className="items-box--seperater"></div>
-            </div>
-          ))}
+          {!this.state.loading ? (
+            this.state.items
+          ) : (
+            <img src={loading} alt="loading bars" height="80px" />
+          )}
         </div>
       </label>
     );
