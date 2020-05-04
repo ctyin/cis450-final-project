@@ -6,7 +6,8 @@ import PlantsPage from './Components/ElectricPlants/PlantsPage';
 
 ReactDOM.render(
   <React.StrictMode>
-    <SearchPage />
+    {/* <SearchPage /> */}
+    <PlantsPage />
   </React.StrictMode>,
   document.getElementById('root')
 );

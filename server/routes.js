@@ -163,11 +163,11 @@ async function bestElectric(req, res) {
 	Plants AS
 	(
 		SELECT *
-		FROM Powerplants
+		FROM powerplant
 		WHERE Plant_State = ${given_year}
 	)
 	SELECT E.id, E.make, E.model
-	FROM Electric E, Powerplants P
+	FROM Electric E, powerplant P
 	ORDER BY (P.MMBtu/1000000 / P.Net_Generation * E.highwayE/1000) DESC`;
 
   const queryDB = async () => {
@@ -204,7 +204,7 @@ async function bestElectricPowerplantPairs(req, res) {
     PlantsConsidered AS (
         SELECT NETGEN, plant_id, rep_primemover, nunit_id, 
         rep_fueltype, ELEC_FUELCON, plant_name, ELEC_FUELCON / 1000000 / NETGEN as compute2
-        FROM PowerPlants
+        FROM powerplant
         WHERE YEAR=${year} AND NETGEN>0
     ),
     GivenPlant AS
@@ -254,7 +254,7 @@ async function typeOfFuel(req, res) {
   `WITH GivenPlant AS
     (
         SELECT *
-        FROM Powerplants
+        FROM powerplant
         WHERE Plant_State = ${given_state}
     )
         SELECT * FROM 
@@ -367,6 +367,49 @@ async function getYears(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getPowerYears(req, res) {
+
+  let query = `SELECT YEAR
+    FROM Powerplant
+    GROUP BY YEAR
+    ORDER BY YEAR DESC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getStates(req, res) {
+  let query = `SELECT State
+    FROM powerplant 
+    GROUP BY State
+    ORDER BY State`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 module.exports = {
   twoCities: twoCities,
   getEpaScore: getEpaScore,
@@ -379,4 +422,6 @@ module.exports = {
   getAllMakes: getAllMakes,
   getModels: getModels,
   getYears: getYears,
+  getPowerYears: getPowerYears,
+  getStates: getStates,
 };

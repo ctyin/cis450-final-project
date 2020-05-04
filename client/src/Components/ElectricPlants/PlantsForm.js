@@ -22,14 +22,26 @@ class PlantsForm extends Component {
       prime_mover: null,
       
       // functions
-      func: this.props.func
+      func: this.props.func,
+
+      setModel: false,
+      setYear: false,
     };
 
-    // this.originSet = this.originSet.bind(this);
+    this.makeSet = this.makeSet.bind(this);
+    this.modelSet = this.modelSet.bind(this);
+    this.carYearSet = this.carYearSet.bind(this);
+    this.ppYearSet = this.ppYearSet.bind(this);
+    this.ppNameSet = this.ppNameSet.bind(this);
+    this.fuelTypeSet = this.fuelTypeSet.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
     // update state for items
+
+    if (this.state.make !== prevState.make) {
+      this.setState({ setModel: true, model: null });
+    }
   }
 
   makeSet(choice) {
@@ -109,7 +121,7 @@ class PlantsForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    type={1}
+                    type={'make'}
                     setter={this.makeSet}
                     label="Make"
                     option="Make of Vehicle"
@@ -122,25 +134,75 @@ class PlantsForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    type={2}
+                    type={'model'}
                     setter={this.modelSet}
                     label="Model"
                     option="Model of Vehicle"
                     elementID="model"
+                    make={this.state.make}
+                    set={this.state.setModel}
+                  />
+                </div>
+              </div>
+              <div className="separater"></div>
+              <div className="search-input">
+                <div className="select-form">
+                  <SelectBox
+                    type={'carYear'}
+                    setter={this.carYearSet}
+                    label="Car Year"
+                    option="Year of Vehicle"
+                    elementID="year"
+                    set={this.state.setYear}
+                    make={this.state.make}
+                    model={this.state.model}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="row-spacer"/>
+
+        <div className="container">
+          <div className="search-wrapper">
+            <div className="search-inputs">
+              <div className="search-input">
+                <div className="select-form">
+                  <SelectBox
+                    type={'plantYear'}
+                    setter={this.ppYearSet}
+                    label="plant Year"
+                    option="Year of Operation"
+                    elementID="ppyear"
+                    set={true}
+                  />
+                </div>
+              </div>
+              <div className="separater"></div>
+              <div className="search-input">
+                <div className="select-form">
+                  <SelectBox
+                    type={'state'}
+                    setter={this.ppStateSet}
+                    label="State"
+                    option="State of Plant"
+                    elementID="state"
                     set={false}
                   />
                 </div>
               </div>
-            <div className="separater"></div>
+              <div className="separater"></div>
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    type={1}
-                    setter={this.makeSet}
-                    label="Make"
-                    option="Make of Vehicle"
-                    elementID="make"
-                    set={true}
+                    type={'name'}
+                    setter={this.ppNameSet}
+                    label="Name"
+                    option="Name of Plant"
+                    elementID="name"
+                    set={false}
                   />
                 </div>
               </div>
@@ -148,11 +210,11 @@ class PlantsForm extends Component {
               <div className="search-input">
                 <div className="select-form">
                   <SelectBox
-                    type={2}
-                    setter={this.modelSet}
-                    label="Model"
-                    option="Model of Vehicle"
-                    elementID="model"
+                    type={'fuel'}
+                    setter={this.fuelTypeSet}
+                    label="Fuel type"
+                    option="Fuel Source"
+                    elementID="fuel"
                     set={false}
                   />
                 </div>
@@ -190,8 +252,7 @@ class PlantsForm extends Component {
                 </span>
               </button>
             </div>
-        </div>
-        
+          </div>
         </div>
     </form>
     );

@@ -59,6 +59,10 @@ app.get('/models/:make', routes.getModels);
 
 app.get('/years/:make/:model', routes.getYears);
 
+app.get('/poweryears', routes.getPowerYears);
+
+app.get('/states', routes.getStates);
+
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
 

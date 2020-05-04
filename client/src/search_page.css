@@ -120,6 +120,10 @@ a.logo-wrapper {
   margin-bottom: 40px !important;
 }
 
+.row-spacer {
+  height: 20px !important;
+}
+
 .search-wrapper {
   border: 1px solid rgb(247, 247, 247) !important;
   border-radius: 12px !important;
@@ -275,7 +279,7 @@ span.search-option {
   max-height: 25vh !important;
   border: 1px solid rgb(247, 247, 247) !important;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 8px !important;
-  transition: opacity 0.8s ease-in-out !important;
+  transition:  opacity 0.8s ease-in-out !important;
 }
 
 .items-box.hidden {
