@@ -3,6 +3,7 @@ import NavBar from './NavBar';
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
 import '../search_page.css';
+import carPic from '../loading-car.svg';
 
 class SearchPage extends Component {
   constructor(props) {
@@ -36,9 +37,11 @@ class SearchPage extends Component {
         {this.state.display ? (
           <SearchResults src={srcid} dest={destid} vehicle={car} />
         ) : (
-          <h1 style={{ textAlign: 'center', marginTop: '150px' }}>
-            Your result will be displayed here!
-          </h1>
+          <div
+            style={{ textAlign: 'center', marginTop: '60px', height: '60vh' }}
+          >
+            <img src={carPic} alt="waiting-by-car" />
+          </div>
         )}
       </div>
     );
