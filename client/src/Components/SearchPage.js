@@ -9,33 +9,24 @@ class SearchPage extends Component {
     super(props);
 
     this.state = {
-      src: null,
-      dest: null,
-      make: null,
-      model: null,
-      yr: null,
-      miles: 0,
-      emissions: 0,
+      srcid: null,
+      destid: null,
+      car: null,
       display: false,
     };
   }
 
-  formSubmit = (src, dest, make, model, yr) => {
-    // send query to backend
+  formSubmit = (srcid, destid, yrid) => {
     this.setState({
-      src: src,
-      dest: dest,
-      make: make,
-      model: model,
-      yr: yr,
-      miles: 239.1,
-      emissions: 84995.268,
+      srcid: srcid,
+      destid: destid,
+      car: yrid,
       display: true,
     });
   };
 
   render() {
-    const { src, dest, make, model, yr, miles, emissions } = this.state;
+    const { srcid, destid, car } = this.state;
 
     return (
       <div id="wrapper">
@@ -43,15 +34,7 @@ class SearchPage extends Component {
         <div className="spacer" />
         <SearchForm func={this.formSubmit} />
         {this.state.display ? (
-          <SearchResults
-            src={src}
-            dest={dest}
-            make={make}
-            model={model}
-            yr={yr}
-            miles={miles}
-            emissions={emissions}
-          />
+          <SearchResults src={srcid} dest={destid} vehicle={car} />
         ) : (
           <h1 style={{ textAlign: 'center', marginTop: '150px' }}>
             Your result will be displayed here!

@@ -44,11 +44,11 @@ async function twoCities(req, res) {
   let given_city1_id = req.params.city1;
   let given_city2_id = req.params.city2;
 
-  let query = `SELECT C.latitude AS city1lat, C.longitude AS city1long
+  let query = `SELECT *
     FROM City C
     WHERE C.id = ${given_city1_id}
     UNION 
-    SELECT C.latitude AS city2lat, C.longitude AS city2long
+    SELECT *
     FROM City C
     WHERE C.id = ${given_city2_id}
     `;
@@ -70,13 +70,11 @@ async function twoCities(req, res) {
 
 // 1b
 async function getEpaScore(req, res) {
-  let given_make = req.params.make;
-  let given_model = req.params.model;
-  let given_year = req.params.year;
+  let given_id = req.params.id;
 
   let query = `SELECT E.epa_score
     FROM Vehicle V JOIN  Emission E ON V.id = E.vehicle_id
-    WHERE V.make = ${given_make} AND V.model = ${given_model} AND V.year = ${given_year}
+    WHERE V.id=${given_id}
     `;
 
   const queryDB = async () => {
@@ -282,7 +280,7 @@ async function typeOfFuel(req, res) {
 
 // get all cities in database
 async function getAllCities(req, res) {
-  let query = `SELECT * FROM City`;
+  let query = `SELECT * FROM City ORDER BY COUNTRY ASC, NAME ASC`;
 
   const queryDB = async () => {
     let connection = await pool.getConnection();
@@ -410,6 +408,28 @@ async function getStates(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getCarInfo(req, res) {
+  let id = req.params.id;
+
+  let query = `SELECT *
+    FROM Vehicle
+    WHERE ID=${id}`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 module.exports = {
   twoCities: twoCities,
   getEpaScore: getEpaScore,
@@ -424,4 +444,5 @@ module.exports = {
   getYears: getYears,
   getPowerYears: getPowerYears,
   getStates: getStates,
+  getCarInfo: getCarInfo,
 };

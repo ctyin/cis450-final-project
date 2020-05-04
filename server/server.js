@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/twocities/:city1/:city2', routes.twoCities);
 
 // SQL Query #1b
-app.get('/epascore/:make/:model/:year', routes.getEpaScore);
+app.get('/epascore/:id', routes.getEpaScore);
 
 // SQL Query #2
 app.get('/efficientVehicles/:year', routes.mostEfficientVehicles);
@@ -59,9 +59,13 @@ app.get('/models/:make', routes.getModels);
 
 app.get('/years/:make/:model', routes.getYears);
 
+<<<<<<< HEAD
 app.get('/poweryears', routes.getPowerYears);
 
 app.get('/states', routes.getStates);
+=======
+app.get('/vehicle/:id', routes.getCarInfo);
+>>>>>>> 4a342e3b8c7338156e8cf618f7046832f586aba9
 
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
