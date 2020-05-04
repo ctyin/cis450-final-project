@@ -18,20 +18,23 @@ class PlantsForm extends Component {
       ppName: null,
       fueltype: null,
       ppId: null,
-      nucId: null,
-      prime_mover: null,
       
       // functions
       func: this.props.func,
 
       setModel: false,
       setYear: false,
+
+      setName: false,
+      setFuel: false,
     };
 
     this.makeSet = this.makeSet.bind(this);
     this.modelSet = this.modelSet.bind(this);
     this.carYearSet = this.carYearSet.bind(this);
+
     this.ppYearSet = this.ppYearSet.bind(this);
+    this.ppStateSet = this.ppStateSet.bind(this);
     this.ppNameSet = this.ppNameSet.bind(this);
     this.fuelTypeSet = this.fuelTypeSet.bind(this);
   }
@@ -42,6 +45,55 @@ class PlantsForm extends Component {
     if (this.state.make !== prevState.make) {
       this.setState({ setModel: true, model: null });
     }
+
+    if (this.state.model !== prevState.model) {
+      this.setState({ setYear: true, year: null });
+    }
+
+
+    /****** FOR PLANTS ******/
+    if (this.state.plantYear !== prevState.plantYear || this.state.ppState !== prevState.ppState) {
+      this.setState({ setName: true, ppName: null, setFuel: false, fueltype: null })
+    }
+
+    if (this.state.ppName !== prevState.ppName) {
+      this.setState({ setFuel: true, fueltype: null})
+    }
+
+    
+    /****** FETCH QUERY INPUTS USING FORM INPUTS ******/
+    const carComplete =
+      this.state.make !== null &&
+      this.state.model !== null &&
+      this.state.carYear !== null;
+      
+    const plantComplete =
+      this.state.ppYear !== null &&
+      this.state.ppState !== null &&
+      this.state.ppName !== null &&
+      this.state.fueltype !== null;
+
+    if (plantComplete) {
+        const reqOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            year: this.state.ppYear,
+            state: this.state.ppState,
+            name: this.state.ppState,
+            fuel: this.state.fueltype,
+          }),
+        };
+      
+        console.log(reqOptions.body);
+
+        fetch('http://localhost:8081/plantPairsInputs', reqOptions)
+        .then(res => res.json())
+        .then((result) => {
+          
+        });
+    }
+
   }
 
   makeSet(choice) {
@@ -105,10 +157,10 @@ class PlantsForm extends Component {
       this.state.carYear !== null;
       
     const plantComplete =
-      this.state.ppYearSet !== null &&
-      this.state.ppStateSet !== null &&
-      this.state.ppNameSet !== null &&
-      this.state.fuelTypeSet !== null;
+      this.state.ppYear !== null &&
+      this.state.ppState !== null &&
+      this.state.ppName !== null &&
+      this.state.fueltype !== null;
 
     const { originItems } = this.state;
 
@@ -189,7 +241,7 @@ class PlantsForm extends Component {
                     label="State"
                     option="State of Plant"
                     elementID="state"
-                    set={false}
+                    set={true}
                   />
                 </div>
               </div>
@@ -202,7 +254,9 @@ class PlantsForm extends Component {
                     label="Name"
                     option="Name of Plant"
                     elementID="name"
-                    set={false}
+                    plantYear={this.state.ppYear}
+                    state={this.state.ppState}
+                    set={this.state.setName}
                   />
                 </div>
               </div>
@@ -215,14 +269,17 @@ class PlantsForm extends Component {
                     label="Fuel type"
                     option="Fuel Source"
                     elementID="fuel"
-                    set={false}
+                    plantYear={this.state.ppYear}
+                    state={this.state.ppState}
+                    plantName={this.state.ppName}
+                    set={this.state.setFuel}
                   />
                 </div>
               </div>
             </div>
             <div className="search-button">
               <button
-                className={carComplete ? 'search--btn' : 'search--btn-disabled'}
+                className={carComplete && plantComplete ? 'search--btn' : 'search--btn-disabled'}
                 type="submit"
               >
                 <span className="search--btn-wrap">

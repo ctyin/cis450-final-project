@@ -18,10 +18,14 @@ class SelectBox extends Component {
 
       make: this.props.make,
       model: this.props.model,
+      carYear: this.props.carYear,
+
+      plantYear: this.props.plantYear,
+      state: this.props.state,
+      name: this.props.plantName,
+      // fueltype: this.props.fueltype
 
       attempted: false,
-
-
     };
 
 
@@ -30,8 +34,87 @@ class SelectBox extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-
+    const { set, type } = state;
     
+    // check if the props have been changed
+    if (props.set !== set) {
+      if (type === 'model') {
+        return {
+          set: props.set,
+          make: props.make,
+          option: 'Model of Vehicle',
+        };
+      }
+
+      if (type === 'carYear') {
+        return {
+          set: props.set,
+          model: props.model,
+          option: 'Year of Vehicle',
+        }
+      }
+    }
+
+
+    // reset if changed earlier part of form
+    if (type === 'model' && props.make !== state.make) {
+      return {
+        set: props.set,
+        make: props.make,
+        option: 'Model of Vehicle',
+      }
+    }
+
+    if (type === 'carYear' && (props.make !== state.make || props.model !== state.model)) {
+      return {
+        make: props.make,
+        model: props.model,
+        set: props.set,
+      }
+    }
+
+
+    /********************   For plants   **********************/
+    if (props.set !== set) {
+      if (type === 'name') {
+        return {
+          set: props.set,
+          plantYear: props.plantYear,
+          state: props.state,
+          option: 'Name of Plant',
+        }
+      }
+
+      if (type === 'fuel') {
+        return {
+          set: props.set,
+          plantYear: props.plantYear,
+          state: props.state,
+          name: props.plantName,
+          option: "Fuel Source"
+        }
+      }
+    }
+
+    // reset if changed earlier part of form
+    if (type === 'name' && (props.state !== state.state || props.plantYear !== state.plantYear)) {
+      return {
+        state: props.state,
+        plantYear: props.plantYear,
+        option: 'Name of Plant'
+      }
+    }
+
+    if (type === 'fuel' && (props.state !== state.state ||
+        props.plantYear !== state.plantYear || props.plantName !== state.name)) {
+          return {
+            state: props.state,
+            plantYear: props.plantYear,
+            name: props.plantName,
+            option: 'Fuel Source'
+          }
+        }
+
     return null;
   }
 
@@ -80,9 +163,9 @@ class SelectBox extends Component {
         .then(result => {
           for (let i = 0; i < result.rows.length; i++) {
             newYears.push(
-              <div key={`${result.rows[i][0]}--make-div`}>
+              <div key={`${result.rows[i][0]}--pyear-div`}>
                 <div
-                  key={`make-id-${result.rows[i][0]}`}
+                  key={`pyear-id-${result.rows[i][0]}`}
                   value={result.rows[i][0]}
                   onClick={this.selectItem}
                   className="items-box--item"
@@ -90,7 +173,7 @@ class SelectBox extends Component {
                   {result.rows[i][0]}
                 </div>
                 <div
-                  key={`${result.rows[i][0]}--sep-make`}
+                  key={`${result.rows[i][0]}--sep-pyear`}
                   className="items-box--seperater"
                 ></div>
               </div>
@@ -117,11 +200,11 @@ class SelectBox extends Component {
               <div key={`${result.rows[i][0]}--state-div`}>
                 <div
                   key={`state-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
+                  value={result.rows[i][0]}
                   onClick={this.selectItem}
                   className="items-box--item"
                 >
-                  {result.rows[i][1]}
+                  {result.rows[i][0]}
                 </div>
                 <div
                   key={`${result.rows[i][0]}--sep-state`}
@@ -144,10 +227,6 @@ class SelectBox extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { type, set } = this.state;
-
-    if (type === 'model') {
-      console.log(set);
-    }
 
     if (type === 'model' && set) {
       if (prevState.make !== this.state.make || !this.state.attempted) {
@@ -184,16 +263,10 @@ class SelectBox extends Component {
             .catch((err) => {
               console.log(err);
             });
-        } else {
-          this.setState({
-            items: [],
-            loading: true,
-            attempted: false,
-            option: 'Model of Vehicle',
-          });
-        }
+        } 
       }
     }
+
 
     if (type === 'carYear' && set) {
       if (
@@ -205,13 +278,11 @@ class SelectBox extends Component {
         let make = this.props.make;
         let model = this.props.model;
         if (make !== null && model !== null) {
-          console.log('attempting fetch');
           fetch(`http://localhost:8081/years/${make}/${model}`)
             .then((res) => {
               return res.json();
             })
             .then((result) => {
-              console.log(result);
               for (let i = 0; i < result.rows.length; i++) {
                 newYears.push(
                   <div key={`${result.rows[i][0]}-year--div`}>
@@ -240,17 +311,106 @@ class SelectBox extends Component {
             .catch((err) => {
               console.log(err);
             });
-        } else {
-          console.log('we here tho?');
-          this.setState({
-            items: [],
-            loading: true,
-            attempted: false,
-            option: 'Year of Vehicle',
-          });
         }
       }
     }
+
+    if (type === 'name' && set) {
+      if (
+        prevState.plantYear !== this.state.plantYear ||
+        prevState.state !== this.state.state ||
+        !this.state.attempted
+      ) {
+        let newNames = [];
+        let plantState = this.props.state;
+        let plantYear = this.props.plantYear;
+        if (plantState !== null && plantYear !== null) {
+          fetch(`http://localhost:8081/plantnames/${plantState}/${plantYear}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((result) => {
+              for (let i = 0; i < result.rows.length; i++) {
+                newNames.push(
+                  <div key={`${result.rows[i][0]}-pname--div`}>
+                    <div
+                      key={`pname-id-${result.rows[i][0]}`}
+                      value={result.rows[i][0]}
+                      onClick={this.selectItem}
+                      className="items-box--item"
+                    >
+                      {result.rows[i][0]}
+                    </div>
+                    <div
+                      key={`${result.rows[i][0]}--sep-pname`}
+                      className="items-box--seperater"
+                    ></div>
+                  </div>
+                );
+              }
+              this.setState({
+                items: newNames,
+                loading: false,
+                attempted: true,
+                option: 'Name of Plant',
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+    }
+
+    if (type === 'fuel' && set) {
+      if (
+        prevState.plantYear !== this.state.plantYear ||
+        prevState.state !== this.state.state ||
+        prevState.name !== this.state.name ||
+        !this.state.attempted
+      ) {
+        let newFuels = [];
+        let plantState = this.props.state;
+        let plantYear = this.props.plantYear;
+        let plantName = this.props.plantName;
+        if (plantState !== null && plantYear !== null && plantName !== null) {
+          fetch(`http://localhost:8081/plantfuel/${plantState}/${plantYear}/${plantName}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((result) => {
+              for (let i = 0; i < result.rows.length; i++) {
+                newFuels.push(
+                  <div key={`${result.rows[i][0]}-pname--div`}>
+                    <div
+                      key={`pname-id-${result.rows[i][0]}`}
+                      value={result.rows[i][0]}
+                      onClick={this.selectItem}
+                      className="items-box--item"
+                    >
+                      {result.rows[i][0]}
+                    </div>
+                    <div
+                      key={`${result.rows[i][0]}--sep-pname`}
+                      className="items-box--seperater"
+                    ></div>
+                  </div>
+                );
+              }
+              this.setState({
+                items: newFuels,
+                loading: false,
+                attempted: true,
+                option: 'Fuel Source',
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+    }
+
   }
 
   UNSAFE_componentWillUnmount() {

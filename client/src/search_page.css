@@ -279,12 +279,8 @@ span.search-option {
   max-height: 25vh !important;
   border: 1px solid rgb(247, 247, 247) !important;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 8px !important;
-<<<<<<< HEAD
-  transition:  opacity 0.8s ease-in-out !important;
-=======
   transition: opacity 0.8s ease-in-out !important;
   background-color: rgb(255, 255, 255);
->>>>>>> 4a342e3b8c7338156e8cf618f7046832f586aba9
 }
 
 .items-box.hidden {
