@@ -67,7 +67,17 @@ app.get('/models/:make', routes.getModels);
 
 app.get('/years/:make/:model', routes.getYears);
 
+app.get('/poweryears', routes.getPowerYears);
+
+app.get('/states', routes.getStates);
+
 app.get('/vehicle/:id', routes.getCarInfo);
+
+app.get('/plantnames/:state/:year', routes.getPlantNames);
+
+app.get('/plantfuel/:state/:year/:name', routes.getPlantFuels);
+
+app.use('/plantPairsInputs', routes.getPlantPairsInputs);
 
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;

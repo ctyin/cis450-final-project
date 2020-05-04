@@ -120,6 +120,10 @@ a.logo-wrapper {
   margin-bottom: 40px !important;
 }
 
+.row-spacer {
+  height: 20px !important;
+}
+
 .search-wrapper {
   border: 1px solid rgb(247, 247, 247) !important;
   border-radius: 12px !important;
