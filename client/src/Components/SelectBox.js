@@ -30,12 +30,20 @@ class SelectBox extends Component {
         return {
           set: props.set,
           make: props.make,
+          option: 'Model of Vehicle',
         };
       } else if (state.type === 5) {
         return {
           set: props.set,
           make: props.make,
           model: props.model,
+          option: 'Year of Vehicle',
+        };
+      } else if (state.type === 2) {
+        return {
+          set: props.set,
+          origin: props.origin,
+          option: 'Destination City',
         };
       }
       return {
@@ -43,7 +51,12 @@ class SelectBox extends Component {
       };
     }
 
-    if (state.type === 4 && props.make !== state.make) {
+    if (state.type === 2 && props.origin !== state.origin) {
+      return {
+        set: props.set,
+        origin: props.origin,
+      };
+    } else if (state.type === 4 && props.make !== state.make) {
       return {
         set: props.set,
         make: props.make,
@@ -76,42 +89,11 @@ class SelectBox extends Component {
               <div key={`${result.rows[i][0]}--div`}>
                 <div
                   key={`from-city-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
+                  data-id={result.rows[i][0]}
                   onClick={this.selectItem}
                   className="items-box--item"
                 >
-                  {result.rows[i][1]}
-                </div>
-                <div
-                  key={`${result.rows[i][0]}--sep-from-city`}
-                  className="items-box--seperater"
-                ></div>
-              </div>
-            );
-          }
-          this.setState({
-            items: newCities,
-            loading: false,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else if (type === 2 && set) {
-      let newCities = [];
-      fetch('http://localhost:8081/allcities')
-        .then((res) => res.json())
-        .then((result) => {
-          for (let i = 0; i < result.rows.length; i++) {
-            newCities.push(
-              <div key={`${result.rows[i][0]}--div`}>
-                <div
-                  key={`from-city-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
-                  onClick={this.selectItem}
-                  className="items-box--item"
-                >
-                  {result.rows[i][1]}
+                  {result.rows[i][1]}, {result.rows[i][4]}
                 </div>
                 <div
                   key={`${result.rows[i][0]}--sep-from-city`}
@@ -138,7 +120,7 @@ class SelectBox extends Component {
               <div key={`${result.rows[i][0]}--make-div`}>
                 <div
                   key={`make-id-${result.rows[i][0]}`}
-                  value={result.rows[i][1]}
+                  data-id={result.rows[i][0]}
                   onClick={this.selectItem}
                   className="items-box--item"
                 >
@@ -165,7 +147,38 @@ class SelectBox extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { type, set } = this.state;
 
-    if (type === 4 && set) {
+    if (type === 2 && set) {
+      let newCities = [];
+      fetch('http://localhost:8081/allcities')
+        .then((res) => res.json())
+        .then((result) => {
+          for (let i = 0; i < result.rows.length; i++) {
+            newCities.push(
+              <div key={`${result.rows[i][0]}--div`}>
+                <div
+                  key={`from-city-id-${result.rows[i][0]}`}
+                  data-id={result.rows[i][0]}
+                  onClick={this.selectItem}
+                  className="items-box--item"
+                >
+                  {result.rows[i][1]}, {result.rows[i][4]}
+                </div>
+                <div
+                  key={`${result.rows[i][0]}--sep-from-city`}
+                  className="items-box--seperater"
+                ></div>
+              </div>
+            );
+          }
+          this.setState({
+            items: newCities,
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (type === 4 && set) {
       if (prevState.make !== this.state.make || !this.state.attempted) {
         let newModels = [];
         let make = this.props.make;
@@ -178,7 +191,7 @@ class SelectBox extends Component {
                   <div key={`${result.rows[i][0]}-model--div`}>
                     <div
                       key={`model-id-${result.rows[i][0]}`}
-                      value={result.rows[i][1]}
+                      data-id={result.rows[i][0]}
                       onClick={this.selectItem}
                       className="items-box--item"
                     >
@@ -195,18 +208,12 @@ class SelectBox extends Component {
                 items: newModels,
                 loading: false,
                 attempted: true,
+                option: 'Model of Vehicle',
               });
             })
             .catch((err) => {
               console.log(err);
             });
-        } else {
-          this.setState({
-            items: [],
-            loading: true,
-            attempted: false,
-            option: 'Model of Vehicle',
-          });
         }
       }
     } else if (type === 5 && set) {
@@ -219,19 +226,17 @@ class SelectBox extends Component {
         let make = this.props.make;
         let model = this.props.model;
         if (make !== null && model !== null) {
-          console.log('attempting fetch');
           fetch(`http://localhost:8081/years/${make}/${model}`)
             .then((res) => {
               return res.json();
             })
             .then((result) => {
-              console.log(result);
               for (let i = 0; i < result.rows.length; i++) {
                 newYears.push(
                   <div key={`${result.rows[i][0]}-year--div`}>
                     <div
                       key={`year-id-${result.rows[i][0]}`}
-                      value={result.rows[i][1]}
+                      data-id={result.rows[i][0]}
                       onClick={this.selectItem}
                       className="items-box--item"
                     >
@@ -254,14 +259,6 @@ class SelectBox extends Component {
             .catch((err) => {
               console.log(err);
             });
-        } else {
-          console.log('we here tho?');
-          this.setState({
-            items: [],
-            loading: true,
-            attempted: false,
-            option: 'Year of Vehicle',
-          });
         }
       }
     }
@@ -291,7 +288,7 @@ class SelectBox extends Component {
 
   selectItem(e) {
     this.setState({ option: e.target.innerHTML, showItems: false });
-    this.state.func(e.target.innerHTML);
+    this.state.func(e.target.innerHTML, e.target.dataset.id);
   }
 
   render() {

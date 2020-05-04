@@ -276,6 +276,7 @@ span.search-option {
   border: 1px solid rgb(247, 247, 247) !important;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 8px !important;
   transition: opacity 0.8s ease-in-out !important;
+  background-color: rgb(255, 255, 255);
 }
 
 .items-box.hidden {
@@ -301,7 +302,7 @@ span.search-option {
 }
 
 .items-box--item:hover {
-  background-color: rgba(235, 235, 235, 0.575) !important;
+  background-color: rgb(218, 218, 218) !important;
 }
 
 .search-label--label {
@@ -355,4 +356,26 @@ circle {
     stroke-dashoffset: 280;
     transform: rotate(360deg);
   }
+}
+
+.results-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  margin-top: 8vh;
+  display: grid;
+  grid-template-columns: 2.1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 1px 20px;
+  grid-template-areas: 'map-area info-area';
+}
+
+.map-area {
+  grid-area: map-area;
+  height: 60vh;
+}
+
+.info-area {
+  grid-area: info-area;
+  height: 60vh;
 }

@@ -12,8 +12,12 @@ class SearchForm extends Component {
       model: null,
       year: null,
       func: this.props.func,
+      setDest: false,
       setModel: false,
       setYear: false,
+      originID: null,
+      destID: null,
+      carID: null,
     };
 
     this.originSet = this.originSet.bind(this);
@@ -25,6 +29,9 @@ class SearchForm extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // update state for items
+    if (this.state.origin !== prevState.origin) {
+      this.setState({ setDest: true, destination: null });
+    }
 
     if (this.state.make !== prevState.make) {
       this.setState({ setModel: true, model: null });
@@ -38,32 +45,32 @@ class SearchForm extends Component {
     }
   }
 
-  originSet(choice) {
-    this.setState({ origin: choice });
+  originSet(choice, cityID) {
+    this.setState({ origin: choice, originID: cityID });
   }
 
-  destSet(choice) {
-    this.setState({ destination: choice });
+  destSet(choice, cityID) {
+    this.setState({ destination: choice, destID: cityID });
   }
 
-  makeSet(choice) {
+  makeSet(choice, vehicleID) {
     this.setState({ make: choice });
   }
 
-  modelSet(choice) {
+  modelSet(choice, vehicleID) {
     this.setState({ model: choice });
   }
 
-  yearSet(choice) {
-    this.setState({ year: choice });
+  yearSet(choice, vehicleID) {
+    this.setState({ year: choice, carID: vehicleID });
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const { origin, destination, make, model, year } = this.state;
+    const { originID, destID, carID } = this.state;
 
-    this.state.func(origin, destination, make, model, year);
+    this.state.func(originID, destID, carID);
   };
 
   render() {
@@ -100,7 +107,8 @@ class SearchForm extends Component {
                     label="destination"
                     option="Destination City"
                     elementID="dest"
-                    set={false}
+                    set={this.state.setDest}
+                    origin={this.state.origin}
                   />
                 </div>
               </div>
