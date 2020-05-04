@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom';
 import SearchPage from './Components/SearchPage';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
+import StatsPage from './Components/StatVisualization/StatsPage';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Switch>
         <Route path="/" component={SearchPage} exact />
+        <Route path="/stats" component={StatsPage} exact />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,
