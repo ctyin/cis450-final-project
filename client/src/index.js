@@ -1,13 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SearchPage from './Components/SearchPage';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
+import StatsPage from './Components/StatVisualization/StatsPage';
 import PlantsPage from './Components/ElectricPlants/PlantsPage';
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <SearchPage /> */}
-    <PlantsPage />
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" component={SearchPage} exact />
+        <Route path="/stats" component={StatsPage} exact />
+        <Route path='/plants' component={PlantsPage} exact />
+      </Switch>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
