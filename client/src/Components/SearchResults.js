@@ -50,12 +50,12 @@ class SearchResults extends Component {
       fetch(`http://localhost:8081/twocities/${newSrc}/${newDest}`)
         .then((res) => res.json())
         .then((result) => {
-          let source = [result.rows[0][2], result.rows[0][3]];
-          let destination = [result.rows[1][2], result.rows[1][3]];
-          let source_name = result.rows[0][1];
-          let source_country = result.rows[0][4];
-          let dest_name = result.rows[1][1];
-          let dest_country = result.rows[1][4];
+          let source = [result.rows[1][2], result.rows[1][3]];
+          let destination = [result.rows[0][2], result.rows[0][3]];
+          let source_name = result.rows[1][1];
+          let source_country = result.rows[1][4];
+          let dest_name = result.rows[0][1];
+          let dest_country = result.rows[0][4];
           fetch(`http://localhost:8081/vehicle/${newCar}`)
             .then((vres) => vres.json())
             .then((car) => {
@@ -91,12 +91,13 @@ class SearchResults extends Component {
     fetch(`http://localhost:8081/twocities/${src}/${dest}`)
       .then((res) => res.json())
       .then((result) => {
-        let source = [result.rows[0][2], result.rows[0][3]];
-        let destination = [result.rows[1][2], result.rows[1][3]];
-        let source_name = result.rows[0][1];
-        let source_country = result.rows[0][4];
-        let dest_name = result.rows[1][1];
-        let dest_country = result.rows[1][4];
+        console.log(result);
+        let source = [result.rows[1][2], result.rows[1][3]];
+        let destination = [result.rows[0][2], result.rows[0][3]];
+        let source_name = result.rows[1][1];
+        let source_country = result.rows[1][4];
+        let dest_name = result.rows[0][1];
+        let dest_country = result.rows[0][4];
         fetch(`http://localhost:8081/vehicle/${vehicle}`)
           .then((vres) => vres.json())
           .then((car) => {
