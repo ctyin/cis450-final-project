@@ -49,7 +49,8 @@ class PlantsPage extends Component {
           primemover={primemover}
           />
         ) : (
-          <div style={{textAlign: 'center', marginTop: '60px', height: '60vh'}} >
+          <div className="starter-content">
+            <h3>Find electric cars and powerplants with better ratings!</h3>
             <img src={carPic} alt='elon'/>
           </div>
         )}

@@ -43,7 +43,11 @@ class PlantResults extends Component {
       primemover !== this.props.primemover
     ) {
 
-      const { newCarId, newPpId, newPpYear, newFueltype, newPrimemover } = this.props;
+      const newCarId = this.props.carId;
+      const newPpId = this.props.ppId;
+      const newPpYear = this.props.ppYear;
+      const newFueltype = this.props.fueltype;
+      const newPrimemover = this.primemover;
 
       const reqOptions1 = {
         method: 'POST',
@@ -56,6 +60,8 @@ class PlantResults extends Component {
           fueltype: newFueltype,
         }),
       };
+
+      console.log(reqOptions1)
 
       let output = [];
 

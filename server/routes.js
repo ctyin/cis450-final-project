@@ -350,7 +350,7 @@ async function getCarId(req, res) {
 // Inputs to 5
 async function getPlantPairsInputs(req, res) {
   const { year, state, name, fuel } = req.body;
-  
+
   let query = `
   SELECT MAX(plant_id), rep_primemover
   FROM Powerplant
@@ -374,7 +374,9 @@ async function getPlantPairsInputs(req, res) {
 }
 
 // 5
-async function bestElectricPowerplantPairs(req, res) {
+async function bestElectricPowerplantPairs(req, res) {  
+    console.log(req.body)
+  
     let plant_id = req.body.plant_id;
     let year = req.body.year;
     let rep_prime = req.body.prime_mover;
