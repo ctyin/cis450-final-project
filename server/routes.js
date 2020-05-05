@@ -183,17 +183,90 @@ async function bestElectric(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function allElectricMakes(req, res) {
+  let query = `
+  SELECT MAX(id), make
+	FROM Vehicle
+  WHERE fueltype1='Electricity'
+  GROUP BY make
+  ORDER BY make`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function allElectricModels(req, res) {
+  let make = req.params.make;
+  
+  let query = `
+  SELECT MAX(id), model
+	FROM Vehicle
+  WHERE fueltype1='Electricity' and make='${make}'
+  GROUP BY model
+  ORDER BY model`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getCarId(req, res) {
+  let make = req.body.make;
+  let year = req.body.year;
+  let model = req.body.model;
+  
+  let query = `
+  SELECT id
+  FROM Vehicle
+  WHERE make='${make}' AND year=${year} AND model='${model}'
+  `;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 // Inputs to 5
 async function getPlantPairsInputs(req, res) {
   const { year, state, name, fuel } = req.body;
   
   let query = `
-  SELECT MAX(plant_id)
+  SELECT MAX(plant_id), rep_primemover
   FROM Powerplant
-  WHERE YEAR=${year} AND plant_state=${state}
-    AND plant_name=${name} AND rep_fueltype=${fuel}
-  GROUP BY plant_id
-  ORDER BY plant_id`;
+  WHERE YEAR=${year} AND plant_state='${state}'
+    AND plant_name='${name}' AND rep_fueltype='${fuel}'
+  GROUP BY plant_id, rep_primemover`;
 
   const queryDB = async () => {
     let connection = await pool.getConnection();
@@ -212,12 +285,11 @@ async function getPlantPairsInputs(req, res) {
 
 // 5
 async function bestElectricPowerplantPairs(req, res) {
-    let plant_id = req.params.plant_id;
-    let year = req.params.year;
-    let rep_prime = req.params.prime_mover;
-    let nunit_id = req.params.nunit_id;
-    let vehicle_id = req.params.vehicle_id;
-    let fueltype = req.params.fueltype;
+    let plant_id = req.body.plant_id;
+    let year = req.body.year;
+    let rep_prime = req.body.prime_mover;
+    let vehicle_id = req.body.vehicle_id;
+    let fueltype = req.body.fueltype;
 
     let query = `
     WITH Electric AS
@@ -227,8 +299,8 @@ async function bestElectricPowerplantPairs(req, res) {
       WHERE fueltype1='Electricity'
     ),
     PlantsConsidered AS (
-        SELECT NETGEN, plant_id, rep_primemover, nunit_id, 
-        rep_fueltype, ELEC_FUELCON, plant_name, ELEC_FUELCON / 1000000 / NETGEN as compute2
+        SELECT NETGEN, plant_id, plant_state, rep_primemover, rep_fueltype,
+          ELEC_FUELCON, plant_name, ELEC_FUELCON / 1000000 / NETGEN as compute2
         FROM powerplant
         WHERE YEAR=${year} AND NETGEN>0
     ),
@@ -236,7 +308,7 @@ async function bestElectricPowerplantPairs(req, res) {
     (
         SELECT ELEC_FUELCON, NETGEN
         FROM PlantsConsidered
-        WHERE (plant_id = ${plant_id} AND REP_PRIMEMOVER=${rep_prime} AND NUNIT_ID=${nunit_id} AND REP_FUELTYPE=${fueltype})
+        WHERE (plant_id = ${plant_id} AND REP_PRIMEMOVER='${rep_prime}' AND REP_FUELTYPE='${fueltype}')
     ),
     GivenCar AS
     (
@@ -249,12 +321,12 @@ async function bestElectricPowerplantPairs(req, res) {
         FROM GivenPlant, GivenCar
     )
     SELECT *
-    FROM (SELECT Electric.MAKE, Electric.MODEL, plants.plant_name
+    FROM (SELECT Electric.MAKE, Electric.MODEL, plants.plant_name, plants.plant_state
         FROM Electric, PlantsConsidered plants
         WHERE (Exists (SELECT * FROM GivenThreshold))
             AND EXISTS (SELECT * FROM GivenThreshold WHERE (plants.compute2 * Electric.hwympg2/1000) >= GivenThreshold.compute)
         ORDER BY (plants.compute2 * Electric.hwympg2/1000) DESC) x
-    where ROWNUM < 10;
+    where ROWNUM < 6
     `;
 
   const queryDB = async () => {
@@ -515,6 +587,9 @@ module.exports = {
   rankByMPG: rankByMPG,
   bestElectric: bestElectric,
   getPlantPairsInputs: getPlantPairsInputs,
+  allElectricMakes: allElectricMakes,
+  allElectricModels: allElectricModels,
+  getCarId: getCarId,
   bestElectricPowerplantPairs: bestElectricPowerplantPairs,
   typeOfFuel: typeOfFuel,
   getAllCities: getAllCities,

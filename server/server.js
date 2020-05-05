@@ -46,7 +46,7 @@ app.get('/rankmpg', routes.rankByMPG);
 app.get('/bestElectric/:state', routes.bestElectric);
 
 // SQL Query #5
-app.get('/epowerPairs', routes.bestElectricPowerplantPairs);
+app.post('/epowerPairs', routes.bestElectricPowerplantPairs);
 
 // SQL Query #6
 app.get('/fueltype/:state', routes.typeOfFuel);
@@ -70,6 +70,12 @@ app.get('/plantnames/:state/:year', routes.getPlantNames);
 app.get('/plantfuel/:state/:year/:name', routes.getPlantFuels);
 
 app.use('/plantPairsInputs', routes.getPlantPairsInputs);
+
+app.get('/electricmakes', routes.allElectricMakes);
+
+app.get('/electricmodels/:make', routes.allElectricModels);
+
+app.post('/carId', routes.getCarId);
 
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
