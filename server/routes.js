@@ -40,8 +40,6 @@ async function register(req, res) {
     if (user) {
       return res.status(400).json({ message: 'Username already exists' });
     } else {
-      console.log(req.body);
-
       const newUser = new Account({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -276,7 +274,7 @@ async function bestElectric(req, res) {
 // Inputs to 5
 async function getPlantPairsInputs(req, res) {
   const { year, state, name, fuel } = req.body;
-  
+
   let query = `
   SELECT MAX(plant_id)
   FROM Powerplant
@@ -302,14 +300,14 @@ async function getPlantPairsInputs(req, res) {
 
 // 5
 async function bestElectricPowerplantPairs(req, res) {
-    let plant_id = req.params.plant_id;
-    let year = req.params.year;
-    let rep_prime = req.params.prime_mover;
-    let nunit_id = req.params.nunit_id;
-    let vehicle_id = req.params.vehicle_id;
-    let fueltype = req.params.fueltype;
+  let plant_id = req.params.plant_id;
+  let year = req.params.year;
+  let rep_prime = req.params.prime_mover;
+  let nunit_id = req.params.nunit_id;
+  let vehicle_id = req.params.vehicle_id;
+  let fueltype = req.params.fueltype;
 
-    let query = `
+  let query = `
     WITH Electric AS
     (
       SELECT *
@@ -483,7 +481,6 @@ async function getYears(req, res) {
 }
 
 async function getPowerYears(req, res) {
-
   let query = `SELECT YEAR
     FROM Powerplant
     GROUP BY YEAR
