@@ -11,6 +11,7 @@ class PlantsForm extends Component {
       model: null,
       carYear: null,
       carId: null,
+      carAttempted: false,
 
       // powerplant state
       ppYear: null,
@@ -18,6 +19,8 @@ class PlantsForm extends Component {
       ppName: null,
       fueltype: null,
       ppId: null,
+      primemover: null,
+      plantAttempted: false,
       
       // functions
       func: this.props.func,
@@ -43,23 +46,26 @@ class PlantsForm extends Component {
     // update state for items
 
     if (this.state.make !== prevState.make) {
-      this.setState({ setModel: true, model: null });
+      this.setState({ setModel: true, model: null, carAttempted: false });
     }
 
     if (this.state.model !== prevState.model) {
-      this.setState({ setYear: true, year: null });
+      this.setState({ setYear: true, year: null, carAttempted: false });
     }
 
 
     /****** FOR PLANTS ******/
     if (this.state.plantYear !== prevState.plantYear || this.state.ppState !== prevState.ppState) {
-      this.setState({ setName: true, ppName: null, setFuel: false, fueltype: null })
+      this.setState({ setName: true, ppName: null, setFuel: false, fueltype: null, plantAttempted: false })
     }
 
     if (this.state.ppName !== prevState.ppName) {
-      this.setState({ setFuel: true, fueltype: null})
+      this.setState({ setFuel: true, fueltype: null, plantAttempted: false})
     }
 
+    if (this.state.fueltype !== prevState.fueltype) {
+      this.setState({ plantAttempted: false })
+    }    
     
     /****** FETCH QUERY INPUTS USING FORM INPUTS ******/
     const carComplete =
@@ -73,24 +79,50 @@ class PlantsForm extends Component {
       this.state.ppName !== null &&
       this.state.fueltype !== null;
 
-    if (plantComplete) {
+    if (carComplete && !this.state.carAttempted) {
+      const carOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          year: this.state.carYear,
+          make: this.state.make,
+          model: this.state.model,
+        }),
+      };
+
+      fetch('http://localhost:8081/carId', carOptions)
+        .then(res => res.json())
+        .then((result) => {
+          this.setState({ carId: result.rows[0][0], carAttempted: true});
+        })
+        .catch(err => {
+          console.log(err)
+        });
+    }
+
+    if (plantComplete && !this.state.plantAttempted) {
         const reqOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             year: this.state.ppYear,
             state: this.state.ppState,
-            name: this.state.ppState,
+            name: this.state.ppName,
             fuel: this.state.fueltype,
           }),
         };
-      
-        console.log(reqOptions.body);
 
         fetch('http://localhost:8081/plantPairsInputs', reqOptions)
         .then(res => res.json())
         .then((result) => {
-          
+          this.setState({
+            ppId: result.rows[0][0],
+            primemover: result.rows[0][1],
+            plantAttempted: true
+          })
+        })
+        .catch(err => {
+          console.log(err)
         });
     }
 
@@ -108,10 +140,6 @@ class PlantsForm extends Component {
     this.setState({ carYear: choice });
   }
 
-  /* The plan is to do these implicitly (based on user reqs and whatever matches) */
-//   carIdSet(choice) {
-//     this.setState({ carId: choice });
-//   }
 
   ppYearSet(choice) {
     this.setState({ ppYear: choice });
@@ -129,40 +157,28 @@ class PlantsForm extends Component {
     this.setState({ fueltype: choice });
   }
 
-  /* The plan is to do these implicitly (based on user reqs and whatever matches) */
-//   ppIdSet(choice) {
-//     this.setState({ ppId: choice });
-//   }
-
-//   nucIdSet(choice) {
-//     this.setState({ nucId: choice });
-//   }
-
-//   primeMoverSet(choice) {
-//     this.setState({ model: choice });
-//   }
-
   handleSubmit = (e) => {
     e.preventDefault();
 
-    // const { origin, destination, make, model, year } = this.state;
+    const { carId, ppId, ppYear, fueltype, primemover } = this.state;
 
-    // this.state.func(origin, destination, make, model, year);
+    this.state.func(carId, ppId, ppYear, fueltype, primemover);
   };
 
   render() {
     const carComplete =
+      this.state.carId !== null &&
       this.state.make !== null &&
       this.state.model !== null &&
       this.state.carYear !== null;
       
     const plantComplete =
+      this.state.ppId !== null && 
+      this.state.primemover !== null &&
       this.state.ppYear !== null &&
       this.state.ppState !== null &&
       this.state.ppName !== null &&
       this.state.fueltype !== null;
-
-    const { originItems } = this.state;
 
     return (
       <form action="get" role="search" onSubmit={this.handleSubmit}>

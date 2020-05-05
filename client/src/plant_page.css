@@ -382,4 +382,51 @@ circle {
 .info-area {
   grid-area: info-area;
   height: 60vh;
+  -webkit-box-shadow: 0px 22px 23px 0px #0d0d0d;
+  -moz-box-shadow: 0px 22px 23px 0px #0d0d0d;
+  box-shadow: 0px 22px 23px 0px #0d0d0d;
+  border-radius: 25px;
+  -moz-border-radius: 25px;
+  -webkit-border-radius: 25px;
+  border: 3px solid #cccccc;
+  padding: 20px 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.info-box--flex {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 0% !important;
+  border-bottom: #cccccc;
+}
+
+.title-box {
+  text-align: center;
+  position: relative;
+  flex: 1 0 0% !important;
+}
+
+.row-separator {
+  align-self: center !important;
+  border-bottom: 1px solid rgb(221, 221, 221) !important;
+  flex: 0 1 0px !important;
+  width: 80% !important;
+  margin:auto;
+}
+
+.info-box {
+  text-align: left;
+  /* margin-left: 2vw; */
+  position: relative;
+  flex: 1 0 0% !important;
+  padding: 5% 5%;
+}
+
+.info-box.h2 {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-weight: 400;
 }

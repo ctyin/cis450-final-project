@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import loading from '../../loading.gif';
+import fuelData from '../../fuelmap.json';
 
 class SelectBox extends Component {
   constructor(props) {
@@ -124,7 +125,7 @@ class SelectBox extends Component {
 
     if (type === 'make' && set) {
       let newMakes = [];
-      fetch('http://localhost:8081/allmakes')
+      fetch('http://localhost:8081/electricmakes')
         .then(res => res.json())
         .then(result => {
           for (let i = 0; i < result.rows.length; i++) {
@@ -233,7 +234,7 @@ class SelectBox extends Component {
         let newModels = [];
         let make = this.props.make;
         if (make !== null) {
-          fetch(`http://localhost:8081/models/${make}`)
+          fetch(`http://localhost:8081/electricmodels/${make}`)
             .then((res) => res.json())
             .then((result) => {
               for (let i = 0; i < result.rows.length; i++) {
@@ -436,7 +437,12 @@ class SelectBox extends Component {
   }
 
   selectItem(e) {
-    this.setState({ option: e.target.innerHTML, showItems: false });
+    if (this.state.type === 'fuel') {
+      this.setState({ option: fuelData[e.target.innerHTML], showItems: false })
+    } else {
+      this.setState({ option: e.target.innerHTML, showItems: false });
+    }
+
     this.state.func(e.target.innerHTML);
   }
 
