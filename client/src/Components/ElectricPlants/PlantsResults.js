@@ -1,12 +1,5 @@
-/*global google*/
-import React, { Component, useRef } from 'react';
-import {
-  withScriptjs,
-  withGoogleMap,
-  DirectionsRenderer,
-  GoogleMap,
-} from 'react-google-maps';
-const { compose, withProps, lifecycle, withHandlers } = require('recompose');
+import React, { Component } from 'react';
+import Map from './myMap';
 
 class PlantResults extends Component {
   constructor(props) {
@@ -120,6 +113,8 @@ class PlantResults extends Component {
           output.push(obj);
         }
 
+
+
         this.setState({ fetchedRows: output, loading: false });
       })
       .catch(err => {
@@ -133,69 +128,30 @@ class PlantResults extends Component {
       fetchedRows
     } = this.state;
 
-    const distanceSetter = this.setDistance;
-    let refs;
+    // let fetchedRows = [{make: 'make1', model: 'model1'}, 
+    // {make: 'make2', model: 'model2'},
+    // {make: 'make3', model: 'model3'}]
 
-    const Map = compose(
-      withProps({
-        googleMapURL:
-          'https://maps.googleapis.com/maps/api/js?key=AIzaSyAjSdYZZCuf127nn-Hw8i-Hxji5xHUoLfQ&v=3.exp&libraries=geometry,drawing,places',
-        loadingElement: <div style={{ height: `100%` }} />,
-        containerElement: <div className="map-area" />,
-        mapElement: <div style={{ height: `100%` }} />,
-      }),
-      withScriptjs,
-      withGoogleMap,
-      lifecycle({
-        componentDidMount() {
+    let displayVals = fetchedRows.map((value, index) => {
+      return (
+        <div>
+        <div className="info-box--flex">
+          <div className="info-box">
+            {(index === 0) ? 
+              (<h4>{value.make} {value.model}</h4>) :
+              (<div>{value.make} {value.model}</div>)}
+          </div>
+          <div className="info-box">
+          {(index === 0) ? 
+              (<h4>{value.plantName}, {value.plantState}</h4>) :
+              (<div>{value.plantName}, {value.plantState}</div>)}
+          </div>
+        </div>
+        <div className="row-separator"></div>
+        </div>
+      )
+    })
 
-          // THIS LINE DOESN'T WORK
-          const PlacesService = new google.maps.places.PlacesService(this.refs.map);
-
-          let request = {
-            query: fetchedRows[0][2] + ', ' + fetchedRows[0][3],
-            fields: ['name', 'geometry']
-          }
-
-          PlacesService.findPlaceFromQuery(request, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              console.log(results);
-            }
-          })
-          
-          // const DirectionsService = new google.maps.DirectionsService();
-
-          // DirectionsService.route(
-          //   {
-          //     origin: new google.maps.LatLng(src_coord[0], src_coord[1]),
-          //     destination: new google.maps.LatLng(dest_coord[0], dest_coord[1]),
-          //     travelMode: google.maps.TravelMode.DRIVING,
-          //     unitSystem: google.maps.UnitSystem.IMPERIAL,
-          //   },
-          //   (result, status) => {
-          //     if (status === google.maps.DirectionsStatus.OK) {
-          //       const distance = result.routes[0].legs[0].distance.value / 1609;
-          //       distanceSetter(Math.round(distance));
-          //       this.setState({
-          //         directions: result,
-          //       });
-          //     } else {
-          //       console.error(`error fetching directions ${result}`);
-          //     }
-          //   }
-          // );
-        },
-      })
-    )((props) => (
-      <GoogleMap
-        defaultZoom={7}
-        defaultCenter={new google.maps.LatLng(37.0902, -95.7129)}
-      >
-        {props.directions && (
-          <DirectionsRenderer directions={props.directions} />
-        )}
-      </GoogleMap>
-    ));
 
     return (
       <div style={{ marginTop: '60px' }}>
@@ -206,55 +162,26 @@ class PlantResults extends Component {
         ) : (
             <div className="results-container">
               <Map
-                ref='map'
                 googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjSdYZZCuf127nn-Hw8i-Hxji5xHUoLfQ&v=3.exp&libraries=geometry,drawing,places"
                 loadingElement={<div className="map-area" />}
+                containerElement={<div className="map-area" />}
+                mapElement={<div style={{ height: `100%` }} />}
+                center={{ lat: 37.0902, lng: -95.7129 }}
+                fetchPlaces={this.state.fetchedRows}
+                zoom={14} 
               />
-              {/* <div className="info-area">
-              <div className="info-box--flex">
-                <div className="info-box">
-                  <div className="info-box--label">Distance</div>
-                  <h2>{this.state.distance} mi</h2>
+
+
+              <div className="info-area">
+                <div className="info-box--flex">
+                  <div className="title-box">
+                    <h2>Top Cars/Plants</h2>
+                  </div>
                 </div>
-                <div className="info-box">
-                  <div className="info-box--label">CO2</div>
-                </div>
+
+                {displayVals}
+
               </div>
-              <div className="info-box--flex">
-                <div className="info-box">
-                  <div className="info-box--label">Origin City</div>
-                  <h2>{src_name}</h2>
-                </div>
-                <div className="info-box">
-                  <div className="info-box--label">origin country</div>
-                  <h2>{src_country}</h2>
-                </div>
-              </div>
-              <div className="info-box--flex">
-                <div className="info-box">
-                  <div className="info-box--label">destination city</div>
-                  <h2>{dest_name}</h2>
-                </div>
-                <div className="info-box">
-                  <div className="info-box--label">destination country</div>
-                  <h2>{dest_country}</h2>
-                </div>
-              </div>
-              <div className="info-box--flex">
-                <div className="info-box">
-                  <div className="info-box--label">make</div>
-                  <h2>{car_make}</h2>
-                </div>
-                <div className="info-box">
-                  <div className="info-box--label">model</div>
-                  <h2>{car_model}</h2>
-                </div>
-                <div className="info-box">
-                  <div className="info-box--label">year</div>
-                  <h2>{car_year}</h2>
-                </div>
-              </div>
-            </div> */}
             </div>
           )}
       </div>
