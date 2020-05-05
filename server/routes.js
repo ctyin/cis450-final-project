@@ -1,6 +1,13 @@
-let config = require('./db-config.js');
-const oracledb = require('oracledb');
 const database = require('./database.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const keys = require('./keys.js');
+
+// Load input validation
+const validateRegisterInput = require('./validation/register');
+const validateLoginInput = require('./validation/login');
+
+const Account = require('./Schemas/Account');
 
 let pool;
 
@@ -19,6 +26,89 @@ run();
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
 /* -------------------------------------------------- */
+
+// registration
+
+async function register(req, res) {
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Account.findOne({ username: req.body.username }).then((user) => {
+    if (user) {
+      return res.status(400).json({ message: 'Username already exists' });
+    } else {
+      console.log(req.body);
+
+      const newUser = new Account({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: req.body.password,
+        username: req.body.username,
+      });
+
+      //Hashing the password
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then((user) => res.json(user))
+            .catch((err) => console.log(err));
+        });
+      });
+    }
+  });
+}
+
+async function login(req, res) {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const username = req.body.username;
+  const password = req.body.password;
+
+  Account.findOne({ username }).then((user) => {
+    if (!user) {
+      return res.status(404).json({ message: 'Username not found' });
+    }
+
+    bcrypt.compare(password, user.password).then((isMatch) => {
+      if (isMatch) {
+        // User matched
+        // Create JWT Payload
+        const payload = {
+          username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,
+        };
+
+        // Sign token
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          {
+            expiresIn: 31556926, // 1 year in seconds
+          },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: 'Bearer ' + token,
+            });
+          }
+        );
+      } else {
+        return res.status(400).json({ message: 'Password incorrect' });
+      }
+    });
+  });
+}
 
 // dummy function to show functionality
 async function test(req, res) {
@@ -581,6 +671,8 @@ async function getPlantFuels(req, res) {
 }
 
 module.exports = {
+  login: login,
+  register: register,
   twoCities: twoCities,
   getEpaScore: getEpaScore,
   mostEfficientVehicles: mostEfficientVehicles,

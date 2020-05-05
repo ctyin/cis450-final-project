@@ -4,6 +4,7 @@ var routes = require('./routes.js');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
 const mongoose = require('mongoose');
+const passport = require('passport');
 let config = require('./db-config.js');
 const oracledb = require('oracledb');
 
@@ -27,8 +28,15 @@ app.use(errorhandler({ log: errorNotification }));
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(passport.initialize());
+
+require('./passport')(passport);
 
 /************ BEGIN ROUTES ************/
+
+app.post('/register', routes.register);
+
+app.post('/login', routes.login);
 
 // SQL Query #1a
 app.get('/twocities/:city1/:city2', routes.twoCities);
