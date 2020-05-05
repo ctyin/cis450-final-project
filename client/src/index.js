@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 import StatsPage from './Components/StatVisualization/StatsPage';
 import PlantsPage from './Components/ElectricPlants/PlantsPage';
+import LoginPage from './Components/Login';
+import RegistrationPage from './Components/Registration';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -12,7 +14,9 @@ ReactDOM.render(
       <Switch>
         <Route path="/" component={SearchPage} exact />
         <Route path="/stats" component={StatsPage} exact />
-        <Route path='/plants' component={PlantsPage} exact />
+        <Route path="/plants" component={PlantsPage} exact />
+        <Route path="/register" component={RegistrationPage} exact />
+        <Route path="/login" component={LoginPage} exact />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,
