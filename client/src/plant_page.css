@@ -280,7 +280,7 @@ span.search-option {
   border: 1px solid rgb(247, 247, 247) !important;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 8px !important;
   transition: opacity 0.8s ease-in-out !important;
-  background-color: rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 255);
 }
 
 .items-box.hidden {
@@ -381,7 +381,7 @@ circle {
 
 .info-area {
   grid-area: info-area;
-  height: 60vh;
+  height: 100%;
   -webkit-box-shadow: 0px 22px 23px 0px #0d0d0d;
   -moz-box-shadow: 0px 22px 23px 0px #0d0d0d;
   box-shadow: 0px 22px 23px 0px #0d0d0d;
@@ -429,4 +429,14 @@ circle {
   top: 50%;
   transform: translate(0, -50%);
   font-weight: 400;
+}
+
+.starter-content {
+  text-align: center;
+  margin-top: 60px;
+  height: 60vh;
+}
+
+.starter-content img {
+  max-height: 100%;
 }

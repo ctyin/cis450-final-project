@@ -54,7 +54,7 @@ app.get('/rankmpg', routes.rankByMPG);
 app.get('/bestElectric/:state', routes.bestElectric);
 
 // SQL Query #5
-app.post('/epowerPairs', routes.bestElectricPowerplantPairs);
+app.use('/epowerPairs', routes.bestElectricPowerplantPairs);
 
 // SQL Query #6
 app.get('/fueltype/:state', routes.typeOfFuel);

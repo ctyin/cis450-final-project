@@ -234,7 +234,7 @@ class PlantsForm extends Component {
         <div className="row-spacer"/>
 
         <div className="container">
-          <div className="search-wrapper">
+          <div className="search-wrapper" style={{zIndex: 1,}}>
             <div className="search-inputs">
               <div className="search-input">
                 <div className="select-form">
