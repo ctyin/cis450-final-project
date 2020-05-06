@@ -93,6 +93,10 @@ app.get('/stats/getStatsMake/:make', routes.getStatsMake);
 
 app.get('/stats/getStatsYear/:year', routes.getStatsYear);
 
+app.get('/getTrips/:username', routes.getTrips);
+
+app.get('/removeTrip/:trip/:user', routes.removeTrip);
+
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
 

@@ -7,6 +7,7 @@ import StatsPage from './Components/StatVisualization/StatsPage';
 import PlantsPage from './Components/ElectricPlants/PlantsPage';
 import LoginPage from './Components/Login';
 import RegistrationPage from './Components/Registration';
+import Profile from './Components/Profile';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -17,6 +18,7 @@ ReactDOM.render(
         <Route path="/plants" component={PlantsPage} exact />
         <Route path="/register" component={RegistrationPage} exact />
         <Route path="/login" component={LoginPage} exact />
+        <Route path="/profile" component={Profile} exact />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,

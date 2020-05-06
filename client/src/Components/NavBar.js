@@ -58,17 +58,39 @@ class NavBar extends Component {
           <div id="nav-wrapper">
             {loggedIn ? (
               <nav id="nav-icons">
-                <a className="nav-icon" onClick={this.logout}>
-                  <div className="nav-icon-text">Logout</div>
+                <a className="nav-icon" href="/stats">
+                  <div className="nav-icon-text">Stats</div>
+                </a>
+                <a className="nav-icon" href="/plants">
+                  <div className="nav-icon-text">Plants</div>
                 </a>
                 <a className="nav-icon" href="/">
+                  <div className="nav-icon-text">Trips</div>
+                </a>
+                <a className="nav-icon" onClick={this.logout}>
+                  <div className="nav-icon-text" style={{ color: 'red' }}>
+                    Logout
+                  </div>
+                </a>
+                <a className="nav-icon" href="/profile">
                   <div className="nav-icon-text">Hi, {name}!</div>
                 </a>
               </nav>
             ) : (
               <nav id="nav-icons">
+                <a className="nav-icon" href="/stats">
+                  <div className="nav-icon-text">Stats</div>
+                </a>
+                <a className="nav-icon" href="/plants">
+                  <div className="nav-icon-text">Plants</div>
+                </a>
+                <a className="nav-icon" href="/">
+                  <div className="nav-icon-text">Trips</div>
+                </a>
                 <a className="nav-icon" href="/login">
-                  <div className="nav-icon-text">Login</div>
+                  <div style={{ color: '#059bd4' }} className="nav-icon-text">
+                    Login
+                  </div>
                 </a>
                 <a className="nav-icon" href="/register">
                   <div className="nav-icon-text">Sign Up</div>

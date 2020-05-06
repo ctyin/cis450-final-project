@@ -2,6 +2,7 @@ const database = require('./database.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('./keys.js');
+const mongoose = require('mongoose');
 
 // Load input validation
 const validateRegisterInput = require('./validation/register');
@@ -789,6 +790,35 @@ async function addToTrips(req, res) {
   });
 }
 
+async function getTrips(req, res) {
+  const username = req.params.username;
+
+  Account.findOne({ username }).then((user) => {
+    if (!user) {
+      return res.status(400).json({ message: 'user does not exist homeboy' });
+    } else {
+      return res.status(200).json(user.routes);
+    }
+  });
+}
+
+async function removeTrip(req, res) {
+  const objID = mongoose.Types.ObjectId(req.params.trip);
+  const username = req.params.user;
+
+  Account.findOneAndUpdate({ username }, { $pull: { routes: { _id: objID } } })
+    .then((user) => {
+      if (!user) {
+        return res.status(400).json({ message: 'something went wrong' });
+      } else {
+        Trip.findOneAndRemove({ _id: objID }).then(() => {
+          return res.status(200).json(user);
+        });
+      }
+    })
+    .catch((err) => console.log(err));
+}
+
 module.exports = {
   login: login,
   register: register,
@@ -815,5 +845,7 @@ module.exports = {
   getEPA: getEPA,
   addToTrips: addToTrips,
   getStatsMake: getStatsMake,
-  getStatsYear: getStatsYear
+  getStatsYear: getStatsYear,
+  getTrips: getTrips,
+  removeTrip: removeTrip,
 };
