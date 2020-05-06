@@ -25,13 +25,9 @@ class Map extends React.Component {
       fields: ['name', 'geometry']
     };
 
-    console.log(request)
-
     let service = new google.maps.places.PlacesService(map);
     service.findPlaceFromQuery(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        console.log(results)
-
         const first = results[0];
 
         map.setCenter(new google.maps.LatLng(first.geometry.location.lat(), first.geometry.location.lng()))

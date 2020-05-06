@@ -61,8 +61,6 @@ class PlantResults extends Component {
         }),
       };
 
-      console.log(reqOptions1)
-
       let output = [];
 
       fetch('http://localhost:8081/epowerPairs', reqOptions1)
@@ -77,8 +75,6 @@ class PlantResults extends Component {
             }
             output.push(obj);
           }
-
-          console.log(output)
 
           this.setState({ fetchedRows: output, toDisplay: output[0], loading: false });
         })

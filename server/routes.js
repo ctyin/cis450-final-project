@@ -418,8 +418,6 @@ async function bestElectricPowerplantPairs(req, res) {
     where ROWNUM < 6
     `;
 
-  console.log(query);
-
   const queryDB = async () => {
     let connection = await pool.getConnection();
     result = await connection.execute(query);
