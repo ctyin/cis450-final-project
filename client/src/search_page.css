@@ -267,6 +267,14 @@ span.search-option {
   height: 34px !important;
 }
 
+.row-separator {
+  align-self: center !important;
+  border-bottom: 1px solid rgb(221, 221, 221) !important;
+  flex: 0 1 0px !important;
+  width: 80% !important;
+  margin:auto;
+}
+
 .items-box {
   display: flex;
   flex-direction: column;

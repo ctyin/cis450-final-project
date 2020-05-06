@@ -7,7 +7,11 @@ class StatsForm extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {category: 'model', subcategory: null};
+    this.state = {category: 'model',
+     subcategory: null,
+     content: [],
+     loading: true
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeSub = this.handleChangeSub.bind(this);
@@ -41,7 +45,6 @@ class StatsForm extends Component {
             
             );
           }
-          console.log(y);
           this.setState({
             category: y,
             subcategory: newMakes,
@@ -52,20 +55,52 @@ class StatsForm extends Component {
         });
         // this.setState({category: event.target.value, subcategory: ['a', 'b', 'c']});
     } else if (event.target.value === 'year') {
-        
-         this.setState({category: event.target.value, subcategory: ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']});
-    }    
+        let newYears = [];
+        for (let i = 1985; i < 2022; i++) {
+            newYears.push(
+                <option key={i} value={i}>{i}</option>
+            );
+    } 
+    this.setState({category: event.target.value, subcategory: newYears});   
   }
+}
 
   handleChangeSub(event) {
-    this.setState({subcategory: event.target.value});
-    alert(event.target.value);   
+    let x =  <option>{event.target.value}</option>
+
+    this.setState({subcategory: x});
+    // alert(event.target.value);   
   }
 
   handleSubmit(event) {
     // alert('Your favorite flavor is: ' + this.state.value);
-    if (this.state.category == 'model') { 
-        alert('triggering true'); 
+    if (this.state.category === 'make') {
+      let make = this.state.subcategory;
+
+      
+      fetch(`http://localhost:8081/stats/getStatsMake/${make.props.children}`)
+        .then((res) => res.json())
+        .then((result) => {
+          this.setState({
+            content: result.rows,
+            loading: false
+          })
+        });
+    }
+
+    if (this.state.category === 'year') {
+      let year = this.state.subcategory;
+
+      
+      fetch(`http://localhost:8081/stats/getStatsYear/${year.props.children}`)
+        .then((res) => res.json())
+        .then((result) => {
+
+          this.setState({
+            content: result.rows,
+            loading: false
+          })
+        });
     }
     event.preventDefault();
   }
@@ -81,18 +116,31 @@ class StatsForm extends Component {
 
         ):''
 
+      let content = this.state.content.map((row, index) => {
+        return (
+          <div>
+          <div className="info-box--flex" key={`year--data${index}`}>
+            <div className="info-box"> {row[0]} </div>
+            <div className="info-box"> {row[1]} </div>
+            <div className="info-box"> {row[2]} </div>
+          </div>
+          <div className="row-separator"></div>
+          </div>
+        )
+      })
+
     return (
+      <div>
         <form onSubmit={this.handleSubmit}>
         <label>
           Pick a category:
           <select value={this.state.category} onChange={this.handleChange}>
-            <option value="model">Model</option>
+            <option value=""></option>
             <option value="make">Make</option>
             <option value="year">Year</option>
           </select>
         </label>
-        <input type="submit" value="Submit" />
-        <div className = "spacer"/>
+        <div className = "row-spacer"/>
 
 
 {/* the second dropdown changes the value in the first one for some reason... */}
@@ -105,6 +153,20 @@ class StatsForm extends Component {
         <input type="submit" value="Submit" />
 
       </form>
+
+      {this.state.loading ? ('') :
+       (
+       <div className="info-area">
+         <div className="info-box--flex" >
+            <div className="info-box"> <h2>Make</h2></div>
+            <div className="info-box"> <h2>Model</h2> </div>
+            <div className="info-box"> <h2>MPG (Highway)</h2> </div>
+          </div>
+         {content}
+         </div>
+       )}
+
+      </div>
     );
   }
 }
