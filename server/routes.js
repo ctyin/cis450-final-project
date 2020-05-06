@@ -8,6 +8,7 @@ const validateRegisterInput = require('./validation/register');
 const validateLoginInput = require('./validation/login');
 
 const Account = require('./Schemas/Account');
+const Trip = require('./Schemas/Trip');
 
 let pool;
 
@@ -669,6 +670,73 @@ async function getPlantFuels(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getEPA(req, res) {
+  let year = req.params.year;
+  let score = req.params.score;
+
+  year = year < 2008 ? 2008 : year;
+
+  let query = `SELECT CO2 FROM EPA WHERE YEAR=${year} AND RATING=${score}`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function addToTrips(req, res) {
+  let username = req.params.username;
+  let srcID = req.params.src;
+  let destID = req.params.dest;
+  let carID = req.params.vehicle;
+  let distance = req.params.distance;
+
+  Trip.findOne({
+    sourceCity: srcID,
+    destinationCity: destID,
+    distance: distance,
+    vehicle: carID,
+  }).then((trip) => {
+    if (trip) {
+      return res.status(200).json({ message: 'Trip already exists' });
+    } else {
+      const newTrip = new Trip({
+        sourceCity: srcID,
+        destinationCity: destID,
+        distance: distance,
+        vehicle: carID,
+        user: username,
+      });
+
+      newTrip
+        .save()
+        .then((t) => {
+          Account.findOne({ username }).then((user) => {
+            if (!user) {
+              return res
+                .status(200)
+                .json({ message: 'User does not exist (somehow wtf)' });
+            } else {
+              user.routes.push(newTrip);
+              user.save().then((resp) => res.json(resp));
+            }
+          });
+          res.json(user);
+        })
+        .catch((err) => console.log(err));
+    }
+  });
+}
+
 module.exports = {
   login: login,
   register: register,
@@ -692,4 +760,6 @@ module.exports = {
   getCarInfo: getCarInfo,
   getPlantNames: getPlantNames,
   getPlantFuels: getPlantFuels,
+  getEPA: getEPA,
+  addToTrips: addToTrips,
 };
