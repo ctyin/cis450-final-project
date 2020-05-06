@@ -693,6 +693,46 @@ async function getEPA(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+// function to get stats for top 10 models for a make
+async function getStatsMake(req, res) {
+  let make = req.params.make;
+  let query = `SELECT * FROM (SELECT MAKE, MODEL, HWYMPG1 FROM Vehicle WHERE Make = '${make}' ORDER BY HWYMPG1 DESC) WHERE ROWNUM < 11`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+// function to get stats for top 10 models for a make
+async function getStatsYear(req, res) {
+  let year = req.params.year;
+  let query = `SELECT * FROM (SELECT MAKE, MODEL, HWYMPG1 FROM Vehicle WHERE Year = '${year}' ORDER BY HWYMPG1 DESC) WHERE ROWNUM < 11`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 async function addToTrips(req, res) {
   let username = req.params.username;
   let srcID = req.params.src;
@@ -762,4 +802,6 @@ module.exports = {
   getPlantFuels: getPlantFuels,
   getEPA: getEPA,
   addToTrips: addToTrips,
+  getStatsMake: getStatsMake,
+  getStatsYear: getStatsYear
 };
