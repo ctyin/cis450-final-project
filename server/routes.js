@@ -1,6 +1,13 @@
-let config = require('./db-config.js');
-const oracledb = require('oracledb');
 const database = require('./database.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const keys = require('./keys.js');
+
+// Load input validation
+const validateRegisterInput = require('./validation/register');
+const validateLoginInput = require('./validation/login');
+
+const Account = require('./Schemas/Account');
 
 let pool;
 
@@ -19,6 +26,87 @@ run();
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
 /* -------------------------------------------------- */
+
+// registration
+
+async function register(req, res) {
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Account.findOne({ username: req.body.username }).then((user) => {
+    if (user) {
+      return res.status(400).json({ message: 'Username already exists' });
+    } else {
+      const newUser = new Account({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: req.body.password,
+        username: req.body.username,
+      });
+
+      //Hashing the password
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then((user) => res.json(user))
+            .catch((err) => console.log(err));
+        });
+      });
+    }
+  });
+}
+
+async function login(req, res) {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const username = req.body.username;
+  const password = req.body.password;
+
+  Account.findOne({ username }).then((user) => {
+    if (!user) {
+      return res.status(404).json({ message: 'Username not found' });
+    }
+
+    bcrypt.compare(password, user.password).then((isMatch) => {
+      if (isMatch) {
+        // User matched
+        // Create JWT Payload
+        const payload = {
+          username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,
+        };
+
+        // Sign token
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          {
+            expiresIn: 31556926, // 1 year in seconds
+          },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: 'Bearer ' + token,
+            });
+          }
+        );
+      } else {
+        return res.status(400).json({ message: 'Password incorrect' });
+      }
+    });
+  });
+}
 
 // dummy function to show functionality
 async function test(req, res) {
@@ -161,11 +249,11 @@ async function bestElectric(req, res) {
 	Plants AS
 	(
 		SELECT *
-		FROM Powerplants
+		FROM powerplant
 		WHERE Plant_State = ${given_year}
 	)
 	SELECT E.id, E.make, E.model
-	FROM Electric E, Powerplants P
+	FROM Electric E, powerplant P
 	ORDER BY (P.MMBtu/1000000 / P.Net_Generation * E.highwayE/1000) DESC`;
 
   const queryDB = async () => {
@@ -183,39 +271,164 @@ async function bestElectric(req, res) {
     .catch((err) => console.error(err.message));
 }
 
-// 5
-async function bestElectricPowerplantPairs(req, res) {
-  let plant_id = req.params.plant_id;
-  let year = req.params.year;
-  let rep_prime = req.params.prime_mover;
-  let nunit_id = req.params.nunit_id;
-  let vehicle_id = req.params.vehicle_id;
-  let fueltype = req.params.fueltype;
+async function allElectricMakes(req, res) {
+  let query = `
+  SELECT MAX(id), make
+	FROM Vehicle
+  WHERE fueltype1='Electricity'
+  GROUP BY make
+  ORDER BY make`;
 
-  let query = `WITH Electric AS
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function allElectricModels(req, res) {
+  let make = req.params.make;
+
+  let query = `
+  SELECT MAX(id), model
+	FROM Vehicle
+  WHERE fueltype1='Electricity' and make='${make}'
+  GROUP BY model
+  ORDER BY model`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getCarId(req, res) {
+  let make = req.body.make;
+  let year = req.body.year;
+  let model = req.body.model;
+
+  let query = `
+  SELECT id
+  FROM Vehicle
+  WHERE make='${make}' AND year=${year} AND model='${model}'
+  `;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+// Inputs to 5
+async function getPlantPairsInputs(req, res) {
+  const { year, state, name, fuel } = req.body;
+
+  let query = `
+  SELECT MAX(plant_id), rep_primemover
+  FROM Powerplant
+  WHERE YEAR=${year} AND plant_state='${state}'
+    AND plant_name='${name}' AND rep_fueltype='${fuel}'
+  GROUP BY plant_id, rep_primemover`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+// 5
+<<<<<<< HEAD
+async function bestElectricPowerplantPairs(req, res) {  
+    console.log(req.body)
+  
+    let plant_id = req.body.plant_id;
+    let year = req.body.year;
+    let rep_prime = req.body.prime_mover;
+    let vehicle_id = req.body.vehicle_id;
+    let fueltype = req.body.fueltype;
+=======
+async function bestElectricPowerplantPairs(req, res) {
+  let plant_id = req.body.plant_id;
+  let year = req.body.year;
+  let rep_prime = req.body.prime_mover;
+  let vehicle_id = req.body.vehicle_id;
+  let fueltype = req.body.fueltype;
+>>>>>>> 9e08f9c8d4fd1f0f1c202025b1d66ee38507a196
+
+  let query = `
+    WITH Electric AS
     (
-        SELECT *
-        FROM Vehicle
-        WHERE fueltype1='Electricity'
+      SELECT *
+      FROM Vehicle
+      WHERE fueltype1='Electricity'
+    ),
+    PlantsConsidered AS (
+        SELECT NETGEN, plant_id, plant_state, rep_primemover, rep_fueltype,
+          ELEC_FUELCON, plant_name, ELEC_FUELCON / 1000000 / NETGEN as compute2
+        FROM powerplant
+        WHERE YEAR=${year} AND NETGEN>0
     ),
     GivenPlant AS
     (
-        SELECT *
-        FROM Powerplants
-        WHERE (plant_id = ${plant_id} AND YEAR=${year} AND REP_PRIMEMOVER=${rep_prime} AND NUNIT_ID=${nunit_id} AND REP_FUELTYPE=${fueltype})
+        SELECT ELEC_FUELCON, NETGEN
+        FROM PlantsConsidered
+        WHERE (plant_id = ${plant_id} AND REP_PRIMEMOVER='${rep_prime}' AND REP_FUELTYPE='${fueltype}')
     ),
     GivenCar AS
     (
-        SELECT *
-        FROM Electric
-        WHERE id=${vehicle_id}
+    SELECT *
+    FROM Electric
+    WHERE id=${vehicle_id}
+    ),
+    GivenThreshold AS (
+        SELECT GivenPlant.ELEC_FUELCON /1000000 / GivenPlant.NETGEN * GivenCar.hwympg2/1000 AS compute
+        FROM GivenPlant, GivenCar
     )
-    SELECT Electric.MAKE, Electric.MODEL, plants.plant_name
-    FROM Electric CROSS JOIN
-        (SELECT * FROM PowerPlants WHERE YEAR=2016) plants, GivenPlant, GivenCar
-    WHERE (plants.NETGEN > 0 AND GivenPlant.NETGEN > 0)
-        AND (plants.ELEC_FUELCON / 1000000 / plants.NETGEN * Electric.hwympg2/1000) >= (GivenPlant.ELEC_FUELCON /1000000 / GivenPlant.NETGEN * GivenCar.hwympg2/1000);
+    SELECT *
+    FROM (SELECT Electric.MAKE, Electric.MODEL, plants.plant_name, plants.plant_state
+        FROM Electric, PlantsConsidered plants
+        WHERE (Exists (SELECT * FROM GivenThreshold))
+            AND EXISTS (SELECT * FROM GivenThreshold WHERE (plants.compute2 * Electric.hwympg2/1000) >= GivenThreshold.compute)
+        ORDER BY (plants.compute2 * Electric.hwympg2/1000) DESC) x
+    where ROWNUM < 6
     `;
+
+  console.log(query);
 
   const queryDB = async () => {
     let connection = await pool.getConnection();
@@ -239,7 +452,7 @@ async function typeOfFuel(req, res) {
   `WITH GivenPlant AS
     (
         SELECT *
-        FROM Powerplants
+        FROM powerplant
         WHERE Plant_State = ${given_state}
     )
         SELECT * FROM 
@@ -352,6 +565,48 @@ async function getYears(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getPowerYears(req, res) {
+  let query = `SELECT YEAR
+    FROM Powerplant
+    GROUP BY YEAR
+    ORDER BY YEAR DESC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getStates(req, res) {
+  let query = `SELECT plant_state
+    FROM powerplant 
+    GROUP BY plant_state
+    ORDER BY plant_state`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 async function getCarInfo(req, res) {
   let id = req.params.id;
 
@@ -374,17 +629,78 @@ async function getCarInfo(req, res) {
     .catch((err) => console.error(err.message));
 }
 
+async function getPlantNames(req, res) {
+  let state = req.params.state;
+  let year = req.params.year;
+
+  let query = `SELECT plant_name
+    FROM Powerplant
+    WHERE year=${year} AND plant_state='${state}'
+    GROUP BY plant_name
+    ORDER BY plant_name ASC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
+async function getPlantFuels(req, res) {
+  let state = req.params.state;
+  let year = req.params.year;
+  let name = req.params.name;
+
+  let query = `SELECT rep_fueltype
+    FROM Powerplant
+    WHERE year=${year} AND plant_state='${state}' AND plant_name='${name}'
+    GROUP BY rep_fueltype
+    ORDER BY rep_fueltype ASC`;
+
+  const queryDB = async () => {
+    let connection = await pool.getConnection();
+    result = await connection.execute(query);
+
+    await connection.close();
+    return result;
+  };
+
+  queryDB()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => console.error(err.message));
+}
+
 module.exports = {
+  login: login,
+  register: register,
   twoCities: twoCities,
   getEpaScore: getEpaScore,
   mostEfficientVehicles: mostEfficientVehicles,
   rankByMPG: rankByMPG,
   bestElectric: bestElectric,
+  getPlantPairsInputs: getPlantPairsInputs,
+  allElectricMakes: allElectricMakes,
+  allElectricModels: allElectricModels,
+  getCarId: getCarId,
   bestElectricPowerplantPairs: bestElectricPowerplantPairs,
   typeOfFuel: typeOfFuel,
   getAllCities: getAllCities,
   getAllMakes: getAllMakes,
   getModels: getModels,
   getYears: getYears,
+  getPowerYears: getPowerYears,
+  getStates: getStates,
   getCarInfo: getCarInfo,
+  getPlantNames: getPlantNames,
+  getPlantFuels: getPlantFuels,
 };
