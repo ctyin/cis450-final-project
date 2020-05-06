@@ -373,23 +373,12 @@ async function getPlantPairsInputs(req, res) {
 }
 
 // 5
-<<<<<<< HEAD
-async function bestElectricPowerplantPairs(req, res) {  
-    console.log(req.body)
-  
-    let plant_id = req.body.plant_id;
-    let year = req.body.year;
-    let rep_prime = req.body.prime_mover;
-    let vehicle_id = req.body.vehicle_id;
-    let fueltype = req.body.fueltype;
-=======
 async function bestElectricPowerplantPairs(req, res) {
   let plant_id = req.body.plant_id;
   let year = req.body.year;
   let rep_prime = req.body.prime_mover;
   let vehicle_id = req.body.vehicle_id;
   let fueltype = req.body.fueltype;
->>>>>>> 9e08f9c8d4fd1f0f1c202025b1d66ee38507a196
 
   let query = `
     WITH Electric AS
