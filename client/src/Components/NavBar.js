@@ -54,9 +54,25 @@ class NavBar extends Component {
               <LogoSVG />
             </div>
           </a>
-          <div id="nav-spacer"></div>
+          
+          <div id="nav-spacer1"></div>
+          <div>
+          <nav id='nav-icons'>
+                <a className="nav-icon" href='/'>
+                  <div className="nav-icon-text">Search</div>
+                </a>
+                <a className="nav-icon" href='/plants'>
+                  <div className="nav-icon-text">Electric Cars</div>
+                </a>
+                <a className="nav-icon" href='/stats'>
+                  <div className="nav-icon-text">Car Stats</div>
+                </a>
+          </nav>
+          </div>
+
+          <div id="nav-spacer2"></div>
           <div id="nav-wrapper">
-            {loggedIn ? (
+              {loggedIn ? (
               <nav id="nav-icons">
                 <a className="nav-icon" href="/stats">
                   <div className="nav-icon-text">Stats</div>

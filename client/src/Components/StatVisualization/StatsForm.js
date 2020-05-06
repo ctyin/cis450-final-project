@@ -28,21 +28,6 @@ class StatsForm extends Component {
           for (let i = 0; i < result.rows.length; i++) {
             newMakes.push(
                 <option key={`${result.rows[i][0]}--make-div`} value={result.rows[i][1]}>{result.rows[i][1]}</option>
-            //   <div key={`${result.rows[i][0]}--make-div`}>
-            //     <div
-            //       key={`make-id-${result.rows[i][0]}`}
-            //       data-id={result.rows[i][0]}
-            //       onClick={this.selectItem}
-            //       className="items-box--item"
-            //     >
-            //       {result.rows[i][1]}
-            //     </div>
-            //     <div
-            //       key={`${result.rows[i][0]}--sep-make`}
-            //       className="items-box--seperater"
-            //     ></div>
-            //   </div>
-            
             );
           }
           this.setState({
