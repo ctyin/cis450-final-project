@@ -421,3 +421,56 @@ circle {
   display: absolute;
   bottom: 15px;
 }
+
+.add--btn {
+  cursor: pointer !important;
+  display: inline-block !important;
+  margin: 0px !important;
+  position: relative !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  width: auto !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  outline: currentcolor none medium !important;
+  padding: 14px 24px !important;
+  transition: box-shadow 0.2s ease 0s, -ms-transform 0.1s ease 0s,
+    transform 0.1s ease 0s, transform 0.1s ease 0s !important;
+  border: medium none !important;
+  background: rgb(5, 155, 212) repeat scroll 0% 0% !important;
+  color: rgb(255, 255, 255) !important;
+  white-space: nowrap !important;
+}
+
+.add--btn-disabled {
+  cursor: no-drop !important;
+  display: inline-block !important;
+  margin: 0px !important;
+  position: relative !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  width: auto !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  outline: currentcolor none medium !important;
+  padding: 14px 24px !important;
+  transition: box-shadow 0.2s ease 0s, -ms-transform 0.1s ease 0s,
+    transform 0.1s ease 0s, transform 0.1s ease 0s !important;
+  border: medium none !important;
+  background: rgb(180, 181, 182) repeat scroll 0% 0% !important;
+  color: rgb(255, 255, 255) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
+.add--btn-wrap {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: auto;
+}

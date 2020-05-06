@@ -6,6 +6,7 @@ import {
   DirectionsRenderer,
   GoogleMap,
 } from 'react-google-maps';
+import jwt_decode from 'jwt-decode';
 const { compose, withProps, lifecycle } = require('recompose');
 
 class SearchResults extends Component {
@@ -24,6 +25,9 @@ class SearchResults extends Component {
       car_year: null,
       loading: true,
       distance: 0,
+      output: null,
+      disabled: true,
+      token: null,
     };
 
     this.setDistance = this.setDistance.bind(this);
@@ -31,9 +35,32 @@ class SearchResults extends Component {
 
   setDistance(val) {
     if (val !== this.state.distance) {
-      this.setState({ distance: val });
+      let output = this.state.output;
+      if (output !== 'N/A') {
+        let distance = (val * output) / 1000;
+        output = `${distance.toFixed(3)} kg`;
+      }
+      this.setState({ distance: val, output: output });
     }
   }
+
+  addToTrips = (e) => {
+    e.preventDefault();
+
+    const { dest, src, vehicle } = this.props;
+
+    const { username } = this.state.token;
+
+    const { distance } = this.state;
+
+    fetch(
+      `http://localhost:8081/newTrip/${username}/${src}/${dest}/${vehicle}/${distance}`
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        this.setState({ disabled: true });
+      });
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const { dest, src, vehicle } = prevProps;
@@ -50,12 +77,20 @@ class SearchResults extends Component {
       fetch(`http://localhost:8081/twocities/${newSrc}/${newDest}`)
         .then((res) => res.json())
         .then((result) => {
-          let source = [result.rows[1][2], result.rows[1][3]];
-          let destination = [result.rows[0][2], result.rows[0][3]];
-          let source_name = result.rows[1][1];
-          let source_country = result.rows[1][4];
-          let dest_name = result.rows[0][1];
-          let dest_country = result.rows[0][4];
+          let i, j;
+          if (newSrc == result.rows[1][0]) {
+            i = 1;
+            j = 0;
+          } else {
+            i = 0;
+            j = 1;
+          }
+          let source = [result.rows[i][2], result.rows[i][3]];
+          let destination = [result.rows[j][2], result.rows[j][3]];
+          let source_name = result.rows[i][1];
+          let source_country = result.rows[i][4];
+          let dest_name = result.rows[j][1];
+          let dest_country = result.rows[j][4];
           fetch(`http://localhost:8081/vehicle/${newCar}`)
             .then((vres) => vres.json())
             .then((car) => {
@@ -65,6 +100,90 @@ class SearchResults extends Component {
               fetch(`http://localhost:8081/epascore/${car.rows[0][0]}`)
                 .then((prescore) => prescore.json())
                 .then((score) => {
+                  if (score.rows[0].length === 0) {
+                    this.setState({
+                      src_coord: source,
+                      dest_coord: destination,
+                      src_name: source_name,
+                      src_country: source_country,
+                      dest_name: dest_name,
+                      dest_country: dest_country,
+                      car_make: make,
+                      car_model: model,
+                      car_year: year,
+                      output: 'N/A',
+                      loading: false,
+                      disabled: localStorage.getItem('user-token') === null,
+                    });
+                  } else {
+                    let epa = score.rows[0][0];
+                    fetch(`http://localhost:8081/getepa/${epa}/${year}`)
+                      .then((newres) => newres.json())
+                      .then((newresponse) => {
+                        let co2 = newresponse.rows[0][0] / 1000;
+                        this.setState({
+                          src_coord: source,
+                          dest_coord: destination,
+                          src_name: source_name,
+                          src_country: source_country,
+                          dest_name: dest_name,
+                          dest_country: dest_country,
+                          car_make: make,
+                          car_model: model,
+                          car_year: year,
+                          output: co2,
+                          loading: false,
+                          disabled: localStorage.getItem('user-token') === null,
+                        });
+                      });
+                  }
+                });
+            });
+        })
+        .catch((err) => console.log('error here', err));
+    }
+  }
+
+  componentDidMount() {
+    // make fetch to backend
+    const { src, dest, vehicle } = this.props;
+
+    const loggedIn = localStorage.getItem('user-token');
+    let disabled = true;
+
+    if (loggedIn !== null) {
+      disabled = false;
+      const token = jwt_decode(localStorage.getItem('user-token'));
+      this.setState({ token: token, disabled: disabled });
+    }
+
+    fetch(`http://localhost:8081/twocities/${src}/${dest}`)
+      .then((res) => res.json())
+      .then((result) => {
+        let i, j;
+        if (src == result.rows[1][0]) {
+          i = 1;
+          j = 0;
+        } else {
+          i = 0;
+          j = 1;
+        }
+        let source = [result.rows[i][2], result.rows[i][3]];
+        let destination = [result.rows[j][2], result.rows[j][3]];
+        let source_name = result.rows[i][1];
+        let source_country = result.rows[i][4];
+        let dest_name = result.rows[j][1];
+        let dest_country = result.rows[j][4];
+        fetch(`http://localhost:8081/vehicle/${vehicle}`)
+          .then((vres) => vres.json())
+          .then((car) => {
+            let make = car.rows[0][1];
+            let model = car.rows[0][2];
+            let year = car.rows[0][3];
+            fetch(`http://localhost:8081/epascore/${car.rows[0][0]}`)
+              .then((prescore) => prescore.json())
+              .then((score) => {
+                if (score.rows[0].length === 0) {
                   this.setState({
                     src_coord: source,
                     dest_coord: destination,
@@ -75,59 +194,38 @@ class SearchResults extends Component {
                     car_make: make,
                     car_model: model,
                     car_year: year,
+                    output: 'N/A',
                     loading: false,
                   });
-                });
-            });
-        })
-        .catch((err) => console.log(err));
-    }
-  }
-
-  componentDidMount() {
-    // make fetch to backend
-    const { src, dest, vehicle } = this.props;
-
-    fetch(`http://localhost:8081/twocities/${src}/${dest}`)
-      .then((res) => res.json())
-      .then((result) => {
-        console.log(result);
-        let source = [result.rows[1][2], result.rows[1][3]];
-        let destination = [result.rows[0][2], result.rows[0][3]];
-        let source_name = result.rows[1][1];
-        let source_country = result.rows[1][4];
-        let dest_name = result.rows[0][1];
-        let dest_country = result.rows[0][4];
-        fetch(`http://localhost:8081/vehicle/${vehicle}`)
-          .then((vres) => vres.json())
-          .then((car) => {
-            let make = car.rows[0][1];
-            let model = car.rows[0][2];
-            let year = car.rows[0][3];
-            fetch(`http://localhost:8081/epascore/${car.rows[0][0]}`)
-              .then((prescore) => prescore.json())
-              .then((score) => {
-                console.log(score);
-                this.setState({
-                  src_coord: source,
-                  dest_coord: destination,
-                  src_name: source_name,
-                  src_country: source_country,
-                  dest_name: dest_name,
-                  dest_country: dest_country,
-                  car_make: make,
-                  car_model: model,
-                  car_year: year,
-                  loading: false,
-                });
+                } else {
+                  let epa = score.rows[0][0];
+                  fetch(`http://localhost:8081/getepa/${epa}/${year}`)
+                    .then((newres) => newres.json())
+                    .then((newresponse) => {
+                      let co2 = newresponse.rows[0][0] / 1000;
+                      this.setState({
+                        src_coord: source,
+                        dest_coord: destination,
+                        src_name: source_name,
+                        src_country: source_country,
+                        dest_name: dest_name,
+                        dest_country: dest_country,
+                        car_make: make,
+                        car_model: model,
+                        car_year: year,
+                        output: co2,
+                        loading: false,
+                      });
+                    });
+                }
               });
           });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log('error here', err));
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading, disabled } = this.state;
     const {
       src_coord,
       dest_coord,
@@ -188,6 +286,8 @@ class SearchResults extends Component {
       </GoogleMap>
     ));
 
+    let user = this.state.token;
+
     return (
       <div style={{ marginTop: '60px' }}>
         {loading ? (
@@ -208,6 +308,7 @@ class SearchResults extends Component {
                 </div>
                 <div className="info-box">
                   <div className="info-box--label">CO2</div>
+                  <h2>{this.state.output}</h2>
                 </div>
               </div>
               <div className="info-box--flex">
@@ -243,6 +344,19 @@ class SearchResults extends Component {
                   <div className="info-box--label">year</div>
                   <h2>{car_year}</h2>
                 </div>
+              </div>
+              <div className="info-box--flex">
+                {disabled ? (
+                  <div className="add--btn-wrap">
+                    <button className="add--btn-disabled">Add to Trips</button>
+                  </div>
+                ) : (
+                  <div className="add--btn-wrap">
+                    <button className="add--btn" onClick={this.addToTrips}>
+                      Add to Trips
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

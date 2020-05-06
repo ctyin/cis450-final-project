@@ -85,6 +85,10 @@ app.get('/electricmodels/:make', routes.allElectricModels);
 
 app.post('/carId', routes.getCarId);
 
+app.get('/getepa/:score/:year', routes.getEPA);
+
+app.get('/newTrip/:username/:src/:dest/:vehicle/:distance', routes.addToTrips);
+
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
 
