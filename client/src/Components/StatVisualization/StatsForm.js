@@ -52,15 +52,10 @@ class StatsForm extends Component {
         });
         // this.setState({category: event.target.value, subcategory: ['a', 'b', 'c']});
     } else if (event.target.value === 'year') {
-        let newYears = [];
-        for (let i = 1985; i < 2022; i++) {
-            newYears.push(
-                <option key={i} value={i}>{i}</option>
-            );
-    } 
-    this.setState({category: event.target.value, subcategory: newYears});   
+        
+         this.setState({category: event.target.value, subcategory: ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']});
+    }    
   }
-}
 
   handleChangeSub(event) {
     this.setState({subcategory: event.target.value});
@@ -70,7 +65,7 @@ class StatsForm extends Component {
   handleSubmit(event) {
     // alert('Your favorite flavor is: ' + this.state.value);
     if (this.state.category == 'model') { 
-        alert(this.state.subcategory); 
+        alert('triggering true'); 
     }
     event.preventDefault();
   }
