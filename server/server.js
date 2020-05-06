@@ -89,6 +89,10 @@ app.get('/getepa/:score/:year', routes.getEPA);
 
 app.get('/newTrip/:username/:src/:dest/:vehicle/:distance', routes.addToTrips);
 
+app.get('/stats/getStatsMake/:make', routes.getStatsMake);
+
+app.get('/stats/getStatsYear/:year', routes.getStatsYear);
+
 function errorNotification(err, str, req) {
   var title = 'Error in ' + req.method + ' ' + req.url;
 
