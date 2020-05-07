@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import NavBar from '../NavBar';
 import '../../search_page.css';
 import SelectBox from '../SelectBox';
+import CanvasJSReact from './canvasjs.react';
+//var CanvasJSReact = require('./canvasjs.react');
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class StatsForm extends Component {
   constructor(props) {
@@ -10,7 +14,8 @@ class StatsForm extends Component {
     this.state = {category: 'model',
      subcategory: null,
      content: [],
-     loading: true
+     loading: true,
+     datapoints: []
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -67,7 +72,7 @@ class StatsForm extends Component {
         .then((res) => res.json())
         .then((result) => {
           this.setState({
-            content: result.rows,
+            datapoints: result.rows,
             loading: false
           })
         });
@@ -82,13 +87,15 @@ class StatsForm extends Component {
         .then((result) => {
 
           this.setState({
-            content: result.rows,
+            datapoints: result.rows,
             loading: false
           })
         });
     }
     event.preventDefault();
   }
+
+  
 
 // tried to make a second handler but doesnt compile rip
 //   handleChange2(event) {
@@ -101,18 +108,35 @@ class StatsForm extends Component {
 
         ):''
 
-      let content = this.state.content.map((row, index) => {
+        
+          //        <div>
+          //   <CanvasJSChart options = {options}
+          //       /* onRef = {ref => this.chart = ref} */
+          //   />
+          // </div>
+        
+
+        
+        
+      let datapoints = this.state.datapoints.map((row, index) => {
+        
         return (
-          <div>
-          <div className="info-box--flex" key={`year--data${index}`}>
-            <div className="info-box"> {row[0]} </div>
-            <div className="info-box"> {row[1]} </div>
-            <div className="info-box"> {row[2]} </div>
-          </div>
-          <div className="row-separator"></div>
-          </div>
+          { label: row[0] + ' ' + row[1],  y: row[2]  }
         )
+        
       })
+
+      console.log(datapoints)
+
+      let options = {
+        title: {
+          text: "Top 10 Most Efficient Vehicles (MPG vs Make, Model)"
+        },
+        data: [{				
+                  type: "column",
+                  dataPoints: datapoints,
+         }]
+     }
 
     return (
       <div>
@@ -127,6 +151,8 @@ class StatsForm extends Component {
         </label>
         <div className = "row-spacer"/>
 
+        
+
 
 {/* the second dropdown changes the value in the first one for some reason... */}
         <label>
@@ -138,16 +164,17 @@ class StatsForm extends Component {
         <input type="submit" value="Submit" />
 
       </form>
+      <div className="row-spacer"></div>
 
       {this.state.loading ? ('') :
        (
-       <div className="info-area">
-         <div className="info-box--flex" >
+       <div>
+         {/* <div className="info-box--flex" >
             <div className="info-box"> <h2>Make</h2></div>
             <div className="info-box"> <h2>Model</h2> </div>
             <div className="info-box"> <h2>MPG (Highway)</h2> </div>
-          </div>
-         {content}
+          </div> */}
+         <CanvasJSChart options = {options}/>
          </div>
        )}
 
