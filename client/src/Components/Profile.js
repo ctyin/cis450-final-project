@@ -76,6 +76,9 @@ class Profile extends Component {
           });
 
           this.setState({ token: token, trips: newTrips, redirect: false });
+        })
+        .catch(err => {
+          console.error(err)
         });
     } else {
       this.setState({ redirect: true });

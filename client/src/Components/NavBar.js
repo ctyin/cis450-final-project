@@ -55,7 +55,7 @@ class NavBar extends Component {
             </div>
           </a>
           
-          <div id="nav-spacer1"></div>
+{/*          <div id="nav-spacer1"></div>
           <div>
           <nav id='nav-icons'>
                 <a className="nav-icon" href='/'>
@@ -69,7 +69,7 @@ class NavBar extends Component {
                 </a>
           </nav>
           </div>
-
+*/}
           <div id="nav-spacer2"></div>
           <div id="nav-wrapper">
               {loggedIn ? (
