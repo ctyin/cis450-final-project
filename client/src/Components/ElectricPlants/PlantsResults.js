@@ -164,7 +164,7 @@ class PlantResults extends Component {
         ) : (
             <div className="results-container">
               <Map
-                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjSdYZZCuf127nn-Hw8i-Hxji5xHUoLfQ&v=3.exp&libraries=geometry,drawing,places"
+                googleMapURL="https://maps.googleapis.com/maps/api/js?key=dummyValue&v=3.exp&libraries=geometry,drawing,places"
                 loadingElement={<div className="map-area" />}
                 containerElement={<div className="map-area" />}
                 mapElement={<div style={{ height: `100%` }} />}

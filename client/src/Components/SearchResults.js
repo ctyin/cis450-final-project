@@ -243,7 +243,7 @@ class SearchResults extends Component {
     const Map = compose(
       withProps({
         googleMapURL:
-          'https://maps.googleapis.com/maps/api/js?key=AIzaSyAjSdYZZCuf127nn-Hw8i-Hxji5xHUoLfQ&v=3.exp&libraries=geometry,drawing,places',
+          'https://maps.googleapis.com/maps/api/js?key=dummyValue&v=3.exp&libraries=geometry,drawing,places',
         loadingElement: <div style={{ height: `100%` }} />,
         containerElement: <div className="map-area" />,
         mapElement: <div style={{ height: `100%` }} />,
@@ -297,7 +297,7 @@ class SearchResults extends Component {
         ) : (
           <div className="results-container">
             <Map
-              googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjSdYZZCuf127nn-Hw8i-Hxji5xHUoLfQ&v=3.exp&libraries=geometry,drawing,places"
+              googleMapURL="https://maps.googleapis.com/maps/api/js?key=dummyValue&v=3.exp&libraries=geometry,drawing,places"
               loadingElement={<div className="map-area" />}
             />
             <div className="info-area">
