@@ -5,6 +5,8 @@ In the process, we learned to design the schema ourselves, clean and ingest the 
 
 Our techstack involves an Oracle DB hosted with AWS, an express/node API and a React.js interface. We stored the user accounts in a NoSQL database (MongoDB) and used JSON Web Tokens and Bcrypt to manage login/logout.
 
+Google Maps API key for DirectionsService is also a required dependency for this project.
+
 ## Setting up the db
 Create a .env file in the server. Create environment variables using the dotenv syntax. Need to define:
 - NODE_ORACLEDB_USER
